@@ -1,0 +1,843 @@
+<title>ITS Java Final Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: one 880px study column; sticky tab bar; the question card is the only framed object. Code is always on a dark "editor" panel. */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --sunk:#e8ecf2; --ink:#142033; --muted:#566275; --line:#d3dae5;
+  --accent:#1c5aa6; --accent-ink:#ffffff; --accent-soft:#e2ebf8; --hot:#bf5b08;
+  --good:#16764a; --good-soft:#dff2e7; --bad:#b3302a; --bad-soft:#fae4e1; --note-soft:#fcefd9;
+  --code-bg:#0f1826; --code-fg:#dbe3ee; --code-gut:#5c6a7f; --t-k:#82b2ff; --t-s:#a3d69e; --t-n:#f2b56e; --t-c:#7c899c; --t-t:#e3c4ff;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c1119; --surface:#131a25; --sunk:#1a2331; --ink:#e3e8f0; --muted:#98a4b6; --line:#263143;
+  --accent:#6ba6f3; --accent-ink:#0a1220; --accent-soft:#182940; --hot:#f0923d;
+  --good:#4fc386; --good-soft:#11301f; --bad:#f27a6e; --bad-soft:#3a1916; --note-soft:#33270f;
+  --code-bg:#080d15; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0c1119; --surface:#131a25; --sunk:#1a2331; --ink:#e3e8f0; --muted:#98a4b6; --line:#263143;
+  --accent:#6ba6f3; --accent-ink:#0a1220; --accent-soft:#182940; --hot:#f0923d;
+  --good:#4fc386; --good-soft:#11301f; --bad:#f27a6e; --bad-soft:#3a1916; --note-soft:#33270f;
+  --code-bg:#080d15; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--f-body);-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:22px 72px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+code{font-family:var(--f-mono);font-size:.9em;background:var(--sunk);border:1px solid var(--line);border-radius:4px;padding:0 .3em;white-space:pre-wrap;overflow-wrap:anywhere}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 20px;margin-bottom:14px}
+.eyebrow{font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--hot)}
+.top h1{font-size:clamp(28px,6vw,40px);font-weight:700;margin-top:6px;letter-spacing:-.01em}
+.top h1 span{color:var(--accent)}
+.facts{display:flex;flex-wrap:wrap;gap:6px;font:500 12.5px/1 var(--f-mono);color:var(--muted)}
+.facts span{border:1px solid var(--line);border-radius:999px;padding:6px 10px;background:var(--surface)}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:4px;background:var(--bg);padding-block:8px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.tab{border:0;background:none;padding:8px 14px;border-radius:8px;font-weight:600;color:var(--muted);cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.tab:hover:not([aria-selected="true"]){background:var(--sunk);color:var(--ink)}
+
+/* setup */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:22px}
+.stats div{background:var(--surface);padding:12px 14px}
+.stats b{display:block;font:700 24px/1.1 var(--f-display);font-variant-numeric:tabular-nums}
+.stats small{color:var(--muted);font-size:12.5px}
+@media (max-width:520px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.mode{display:grid;gap:18px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.panel h2{font-size:22px}
+.panel > p{color:var(--muted);margin:6px 0 14px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.dom{border:0;padding:0;margin:0 0 12px}
+.dom legend{font:600 12px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;padding:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:baseline;gap:6px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer;background:var(--bg);user-select:none;max-width:100%}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip .cn{font:600 12px var(--f-mono);color:var(--muted)}
+.chip .cs{font:500 11.5px var(--f-mono);color:var(--muted)}
+.chip .cs.lo{color:var(--bad)}
+.chip:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.chip:has(input:checked) .cn{color:var(--accent)}
+.chip:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.opts-row{display:flex;flex-wrap:wrap;gap:14px 26px;margin:14px 0 16px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg label{position:relative;cursor:pointer}
+.seg input{position:absolute;opacity:0}
+.seg span{display:block;padding:6px 12px;font-weight:500;font-size:14px;border-right:1px solid var(--line)}
+.seg label:last-child span{border-right:0}
+.seg input:checked + span{background:var(--ink);color:var(--bg)}
+.seg input:focus-visible + span{outline:2px solid var(--accent);outline-offset:-2px}
+.optlbl{display:block;font:600 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.check{display:inline-flex;gap:8px;align-items:center;cursor:pointer}
+.check input{width:17px;height:17px;accent-color:var(--accent)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:10px 16px;font-weight:600;cursor:pointer}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.on{background:var(--note-soft);border-color:var(--hot)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.link{border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:4px 0}
+.msg{color:var(--bad);font-size:14px;min-height:1em}
+.routine{margin:0;padding-left:20px;display:grid;gap:6px}
+.routine b{font-weight:600}
+
+/* session */
+.sbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.tally{font:500 13px var(--f-mono);color:var(--muted)}
+.tally .g{color:var(--good)} .tally .r{color:var(--bad)}
+.timer{font:600 15px var(--f-mono);font-variant-numeric:tabular-nums}
+.timer.low{color:var(--bad)}
+.prog{height:4px;background:var(--sunk);border-radius:4px;overflow:hidden;margin-bottom:14px}
+.prog i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.grid{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px}
+.grid button{width:30px;height:28px;border:1px solid var(--line);background:var(--surface);border-radius:5px;font:500 12px var(--f-mono);cursor:pointer;padding:0}
+.grid button.ans{background:var(--sunk)}
+.grid button.flag{border-color:var(--hot);color:var(--hot)}
+.grid button.cur{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
+@media (max-width:520px){.card{padding:16px 14px}}
+.qmeta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:12.5px;color:var(--muted);margin-bottom:12px}
+.qmeta .obj,.obj{font:600 12px var(--f-mono);color:var(--accent);background:var(--accent-soft);border-radius:5px;padding:2px 6px}
+.qmeta .qn{margin-left:auto;font-family:var(--f-mono)}
+.qmeta .tp{font-weight:600;color:var(--hot)}
+.qtext{font-size:16.5px;line-height:1.55;margin-bottom:14px;max-width:70ch}
+.code{display:grid;grid-template-columns:auto minmax(0,1fr);background:var(--code-bg);color:var(--code-fg);border-radius:10px;overflow-x:auto;margin:0 0 16px;font:13.5px/1.6 var(--f-mono)}
+.code pre{margin:0;padding:12px 14px;white-space:pre;font:inherit}
+.code .gut{color:var(--code-gut);text-align:right;padding-right:10px;border-right:1px solid #ffffff14;user-select:none}
+.code .src{overflow:visible}
+.t-k{color:var(--t-k)} .t-s{color:var(--t-s)} .t-n{color:var(--t-n)} .t-c{color:var(--t-c);font-style:italic} .t-t{color:var(--t-t)}
+.hint{font-size:13.5px;color:var(--hot);font-weight:600;margin:0 0 8px}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:11px 12px;cursor:pointer;min-width:0}
+.opt:hover:not(:disabled){border-color:var(--muted)}
+.opt > span:not(.key):not(.tag){flex:1;min-width:0;overflow-wrap:anywhere}
+.opt .key{flex:none;width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font:600 12px var(--f-mono);background:var(--sunk);color:var(--muted)}
+.opt.box .key{border-radius:4px}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.sel .key{background:var(--accent);color:var(--accent-ink)}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.right .key{background:var(--good);color:var(--surface)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .key{background:var(--bad);color:var(--surface)}
+.opt:disabled{cursor:default;color:var(--ink)}
+.opt .tag,.tag{flex:none;font:600 11px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);align-self:center}
+.opt.right .tag{color:var(--good)} .opt.wrong .tag{color:var(--bad)}
+.optcode{flex:1;min-width:0;margin:0;font:13px/1.5 var(--f-mono);background:var(--code-bg);color:var(--code-fg);border-radius:6px;padding:8px 10px;overflow-x:auto;white-space:pre}
+.yn{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.yn-h,.yn-r{display:grid;grid-template-columns:minmax(0,1fr) 64px 64px;align-items:center}
+.yn-h{background:var(--sunk);font:600 11.5px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.yn-h span{padding:8px 12px}.yn-h span+span{text-align:center;padding:8px 0}
+.yn-r{border-top:1px solid var(--line)}
+.yn-s{padding:10px 12px;min-width:0;overflow-wrap:anywhere}
+.ynb{margin:6px;height:36px;border:1.5px solid var(--line);background:var(--surface);border-radius:8px;cursor:pointer;font-weight:600;font-size:13.5px}
+.ynb.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.ynb.right{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.ynb.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.ynb:disabled{cursor:default}
+textarea{width:100%;font:15px/1.5 var(--f-mono);background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;resize:vertical}
+textarea:focus{border-color:var(--accent);outline:none}
+.lbl{display:block;font:600 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+label.lbl code{text-transform:none}
+.typed-rev{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:520px){.typed-rev{grid-template-columns:minmax(0,1fr)}}
+.out{margin:0;font:14px/1.5 var(--f-mono);background:var(--sunk);border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.out.ok{border-color:var(--good)} .out.no{border-color:var(--bad)}
+.fb{margin-top:16px;border-radius:10px;padding:12px 14px;border:1px solid}
+.fb.ok{background:var(--good-soft);border-color:var(--good)}
+.fb.no{background:var(--bad-soft);border-color:var(--bad)}
+.fb strong{font-family:var(--f-display);font-size:18px}
+.fb.ok strong{color:var(--good)} .fb.no strong{color:var(--bad)}
+.fb p{margin:6px 0 0;max-width:72ch}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:18px}
+.keys{font-size:12.5px;color:var(--muted);margin-left:auto}
+@media (max-width:620px){.keys{display:none}}
+
+/* results */
+.score{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;margin-bottom:6px}
+.score b{font:700 56px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.score .pass{font-weight:600;color:var(--good)} .score .fail{font-weight:600;color:var(--bad)}
+.bars{display:grid;gap:7px;margin:16px 0 22px}
+.bar{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr) 54px;gap:10px;align-items:center;font-size:13.5px}
+.bar .track{height:10px;background:var(--sunk);border-radius:5px;overflow:hidden}
+.bar .fill{height:100%;border-radius:5px}
+.bar .n{font:500 12.5px var(--f-mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.bar .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:520px){.bar{grid-template-columns:minmax(0,1fr) 54px}.bar .track{grid-column:1/-1;grid-row:2}}
+.rv{border:1px solid var(--line);border-radius:10px;background:var(--surface);margin-bottom:8px}
+.rv summary{cursor:pointer;padding:11px 14px;display:flex;gap:10px;align-items:baseline;list-style:none}
+.rv summary::-webkit-details-marker{display:none}
+.rv summary .s{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rv summary .tag.bad{color:var(--bad)} .rv summary .tag.gs{color:var(--hot)}
+.rv[open] summary .s{white-space:normal}
+.rv-b{padding:0 14px 14px}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:10px 0}
+@media (max-width:520px){.cols{grid-template-columns:minmax(0,1fr)}}
+.cols > div{min-width:0}
+.ynline{margin-bottom:4px}
+.why{background:var(--sunk);border-radius:8px;padding:10px 12px;margin:0}
+
+/* cram sheet */
+.cram{max-width:76ch}
+.cram .jump{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
+.cram .jump a{font:500 13px var(--f-mono);color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:5px 10px;text-decoration:none;background:var(--surface)}
+.cram h2{font-size:26px;margin:34px 0 4px;padding-top:6px;border-top:2px solid var(--ink)}
+.cram h2 small{font:600 12px var(--f-mono);color:var(--hot);letter-spacing:.06em;display:block;margin-bottom:4px;text-transform:uppercase}
+.cram h3{font-size:18px;margin:22px 0 6px;color:var(--accent)}
+.cram h3 .obj{margin-right:6px;vertical-align:2px}
+.cram ul{padding-left:20px;margin:6px 0}
+.cram li{margin:4px 0}
+.cram p{margin:6px 0}
+.mini{background:var(--code-bg);color:var(--code-fg);font:13px/1.55 var(--f-mono);border-radius:8px;padding:10px 12px;overflow-x:auto;margin:8px 0;white-space:pre}
+.trap{background:var(--note-soft);border-left:3px solid var(--hot);border-radius:0 8px 8px 0;padding:10px 12px;margin:10px 0}
+.trap > b:first-child{font:600 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--hot);display:block;margin-bottom:4px}
+.tbl{overflow-x:auto;margin:8px 0}
+.tbl table{border-collapse:collapse;font-size:14px;min-width:100%}
+.tbl th,.tbl td{border-bottom:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.tbl th{font:600 11.5px var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.tbl td:first-child{font-family:var(--f-mono);font-weight:600;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Certiport IT Specialist · Java</div>
+      <h1>Java <span>Final Review</span></h1>
+    </div>
+    <div class="facts"><span>35–45 questions</span><span>50 minutes</span><span>700 / 1000 to pass</span></div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-practice" aria-selected="true" data-view="practice">Practice</button>
+    <button class="tab" role="tab" id="tab-cram" aria-selected="false" data-view="cram">Cram sheet</button>
+  </nav>
+
+  <section id="v-practice">
+    <div id="setup">
+      <div class="stats">
+        <div><b id="st-total">0</b><small>questions in bank</small></div>
+        <div><b id="st-seen">0</b><small>you've answered</small></div>
+        <div><b id="st-acc">–</b><small>your accuracy</small></div>
+        <div><b id="st-miss">0</b><small>missed or guessed</small></div>
+      </div>
+
+      <div class="mode">
+        <div class="panel">
+          <h2>Drill</h2>
+          <p>Instant feedback and an explanation after every question. Answer choices are shuffled every time, so you have to read them.</p>
+          <div id="objs"></div>
+          <div class="row"><button class="link" id="all-on" type="button">Select all topics</button><button class="link" id="all-off" type="button">Clear</button></div>
+          <div class="opts-row">
+            <div><span class="optlbl">How many</span>
+              <div class="seg">
+                <label><input type="radio" name="count" value="15" checked><span>15</span></label>
+                <label><input type="radio" name="count" value="30"><span>30</span></label>
+                <label><input type="radio" name="count" value="60"><span>60</span></label>
+                <label><input type="radio" name="count" value="all"><span>All</span></label>
+              </div></div>
+            <div><span class="optlbl">Order</span>
+              <div class="seg">
+                <label><input type="radio" name="order" value="weak" checked><span>Weak spots first</span></label>
+                <label><input type="radio" name="order" value="random"><span>Random</span></label>
+              </div></div>
+            <div><span class="optlbl">Question types</span>
+              <label class="check"><input type="checkbox" id="inc-type" checked> Include "type the output"</label></div>
+          </div>
+          <div class="row">
+            <button class="btn primary" id="go-drill" type="button">Start drill</button>
+            <button class="btn" id="redo" type="button" disabled>Redo misses</button>
+            <span class="msg" id="setup-msg"></span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Mock exam</h2>
+          <p>40 questions drawn across every objective, a 50-minute clock, and no feedback until you submit, like the real thing. Aim for 80% or better here to walk in with margin.</p>
+          <button class="btn primary" id="go-mock" type="button">Start mock exam</button>
+        </div>
+
+        <div class="panel">
+          <h2>Beat autopilot</h2>
+          <p>You've seen the GMetrix set enough that your hand moves before your brain does. On every question today:</p>
+          <ol class="routine">
+            <li><b>Read the last sentence first.</b> Is it asking for output, a compile error, a runtime error, or which code to insert?</li>
+            <li><b>Scan for traps</b> before tracing: <code>;</code> after <code>if</code>/<code>for</code>, <code>=</code> vs <code>==</code>, int division, missing <code>break</code>, a string method result that is never assigned, <code>&lt;</code> vs <code>&lt;=</code>, a variable used outside its block.</li>
+            <li><b>Trace with real values.</b> Write the variable values down on your board, line by line.</li>
+            <li><b>Predict, then look.</b> Decide your answer before reading the choices, then find it.</li>
+          </ol>
+        </div>
+        <div class="row"><button class="link" id="reset" type="button">Reset my progress</button></div>
+      </div>
+    </div>
+    <div id="session" hidden></div>
+  </section>
+
+  <section id="v-cram" class="cram" hidden>
+    <div class="jump">
+      <a href="#c1">1 Fundamentals</a><a href="#c2">2 Data types</a><a href="#c3">3 Flow control</a><a href="#c4">4 OOP</a><a href="#c5">5 Debugging</a><a href="#c6">Exam day</a>
+    </div>
+
+    <div class="trap"><b>Top traps on this exam</b>
+      <code>7/2</code> is <code>3</code> · <code>s.toUpperCase();</code> alone changes nothing · <code>==</code> on Strings compares references · <code>switch</code> without <code>break</code> falls through · <code>if (x &gt; 5);</code> has an empty body · a braceless <code>if</code> owns one statement only · array <code>.length</code>, String <code>.length()</code>, ArrayList <code>.size()</code> · <code>list.remove(1)</code> on <code>ArrayList&lt;Integer&gt;</code> removes index 1 · local variables have no default · <code>finally</code> always runs · catch subclasses before superclasses.
+    </div>
+
+    <h2 id="c1"><small>Domain 1</small>Java fundamentals</h2>
+    <h3><span class="obj">1.1</span>main() and running a program</h3>
+<pre class="mini hl">public static void main(String[] args)   // the one entry point the JVM looks for</pre>
+    <ul>
+      <li><b>public</b>: the JVM calls it from outside. <b>static</b>: no object exists yet when the program starts. <b>void</b>: returns nothing. <b>String[] args</b>: command-line arguments.</li>
+      <li>Also legal: <code>String args[]</code>, <code>String... args</code>, <code>static public</code>, any parameter name (<code>String[] x</code>). Leaving out <code>static</code> compiles, but the launcher refuses to run it.</li>
+      <li><code>javac Grades.java</code> compiles to bytecode <code>Grades.class</code>. <code>java Grades</code> runs it (no extension).</li>
+      <li><code>java Grades 90 85</code> gives <code>args = {"90", "85"}</code>, <code>args.length == 2</code>. They're <b>Strings</b>: <code>args[0] + args[1]</code> is <code>"9085"</code>. Use <code>Integer.parseInt(args[0])</code> for math.</li>
+      <li>No arguments: <code>args.length == 0</code> (not null), and <code>args[0]</code> throws <code>ArrayIndexOutOfBoundsException</code>.</li>
+    </ul>
+    <h3><span class="obj">1.2</span>Console input and output, comments</h3>
+    <ul>
+      <li><code>print</code> = no newline. <code>println</code> = newline after. <code>printf</code> / <code>String.format</code> = formatted, no newline unless <code>%n</code> or <code>\n</code>.</li>
+      <li><code>%d</code> int/long · <code>%f</code> double (6 decimals by default) · <code>%.2f</code> 2 decimals, rounded · <code>%s</code> String · <code>%c</code> char · <code>%b</code> boolean · <code>%n</code> newline · <code>%,d</code> 1,234 · <code>%5d</code> right-aligned in 5 · <code>%-5s</code> left-aligned · <code>%05d</code> zero-padded.</li>
+      <li><code>printf("%d", 3.5)</code> compiles but throws <code>IllegalFormatConversionException</code> at runtime.</li>
+      <li>Escapes: <code>\n</code> newline · <code>\t</code> tab · <code>\"</code> quote · <code>\'</code> apostrophe · <code>\\</code> backslash.</li>
+    </ul>
+<pre class="mini hl">import java.util.Scanner;                 // java.lang (String, Math, System, Integer) is automatic
+Scanner in = new Scanner(System.in);
+int age = in.nextInt();      // also nextDouble(), nextBoolean(), next() = one word
+in.nextLine();               // eat the leftover newline!
+String name = in.nextLine(); // whole line, spaces included
+in.close();</pre>
+    <div class="trap"><b>Trap</b><code>nextInt()</code> then <code>nextLine()</code> returns <code>""</code>: the Enter key's newline is still in the buffer. Typing <code>abc</code> for <code>nextInt()</code> throws <code>InputMismatchException</code>.</div>
+    <ul>
+      <li>Comments: <code>// line</code>, <code>/* block */</code>, <code>/** Javadoc */</code> with tags <code>@param</code>, <code>@return</code>, <code>@throws</code>, <code>@author</code>. The <code>javadoc</code> tool turns Javadoc into HTML docs. The compiler ignores all comments.</li>
+    </ul>
+    <h3><span class="obj">1.3</span>Variable scope</h3>
+    <ul>
+      <li>A variable exists only inside the <code>{ }</code> block where it's declared, from the declaration down.</li>
+      <li>A <code>for (int i = 0; ...)</code> counter is gone after the loop. Using <code>i</code> afterward is a compile error.</li>
+      <li><b>Local</b> variables get no default value: reading one before assigning it is a compile error. <b>Fields</b> (instance/static) default to 0, 0.0, false, '\u0000' or null.</li>
+      <li>You can't redeclare a local inside a nested block where it's still in scope (compile error). A local or parameter <b>can</b> shadow a field; use <code>this.name</code> to reach the field.</li>
+      <li>Static field: one copy for the class. Instance field: one per object. Local: one per method call.</li>
+    </ul>
+
+    <h2 id="c2"><small>Domain 2</small>Data types, variables and expressions</h2>
+    <h3><span class="obj">2.1</span>Primitive types</h3>
+    <div class="tbl"><table>
+      <tr><th>Type</th><th>Size</th><th>Range / notes</th><th>Literal</th></tr>
+      <tr><td>byte</td><td>8-bit</td><td>-128 to 127</td><td><code>byte b = 10;</code></td></tr>
+      <tr><td>short</td><td>16-bit</td><td>-32,768 to 32,767</td><td><code>short s = 500;</code></td></tr>
+      <tr><td>int</td><td>32-bit</td><td>about ±2.1 billion (default for whole numbers)</td><td><code>42</code></td></tr>
+      <tr><td>long</td><td>64-bit</td><td>huge; needs <code>L</code> past int range</td><td><code>3000000000L</code></td></tr>
+      <tr><td>float</td><td>32-bit</td><td>~7 significant digits; needs <code>f</code></td><td><code>2.5f</code></td></tr>
+      <tr><td>double</td><td>64-bit</td><td>~15 digits (default for decimals)</td><td><code>2.5</code></td></tr>
+      <tr><td>char</td><td>16-bit</td><td>one Unicode char, 0 to 65,535, single quotes</td><td><code>'A'</code></td></tr>
+      <tr><td>boolean</td><td>n/a</td><td><code>true</code>/<code>false</code> only, never 0/1</td><td><code>true</code></td></tr>
+    </table></div>
+    <ul>
+      <li><b>Widening is automatic</b>: byte → short → int → long → float → double, and char → int. <b>Narrowing needs a cast</b>: <code>int n = (int) 9.99;</code> gives <code>9</code> (truncates toward zero; <code>(int) -9.99</code> is <code>-9</code>).</li>
+      <li>Compile errors: <code>int n = 9.99;</code> · <code>float f = 1.5;</code> (1.5 is a double) · <code>long big = 3000000000;</code> · <code>int x = true;</code> · <code>short s = 1; s = s + 1;</code> (s + 1 is int). <code>s += 1;</code> is fine.</li>
+      <li>Precision loss: double → int drops the fraction; large int/long → float loses digits.</li>
+      <li>Overflow wraps silently: <code>Integer.MAX_VALUE + 1</code> is <code>-2147483648</code>. <code>(byte) 200</code> is <code>-56</code>.</li>
+      <li>char is a number: <code>'A'</code> = 65, <code>'a'</code> = 97, <code>'0'</code> = 48. <code>'A' + 1</code> is int <code>66</code>; <code>(char)('A' + 1)</code> is <code>'B'</code>; <code>char c = 'A'; c++;</code> gives <code>'B'</code>.</li>
+      <li>Names: start with a letter, <code>_</code> or <code>$</code>; no leading digit, no spaces, no keywords; case-sensitive. Constants: <code>final double TAX_RATE = 0.07;</code></li>
+    </ul>
+    <h3><span class="obj">2.2</span>Strings</h3>
+<pre class="mini hl">String s = "Java Exam";   // indexes: J=0 a=1 v=2 a=3 ' '=4 E=5 x=6 a=7 m=8
+s.length()          // 9
+s.charAt(5)         // 'E'          charAt(9) -> StringIndexOutOfBoundsException
+s.substring(5)      // "Exam"       from 5 to the end
+s.substring(0, 4)   // "Java"       end index is EXCLUDED; length = end - begin
+s.indexOf("a")      // 1            first match; -1 if not found
+s.lastIndexOf('a')  // 7
+s.toUpperCase()     // "JAVA EXAM"  returns a NEW string; s is unchanged
+s.replace('a', 'o') // "Jovo Exom"  replaces every match
+s.contains("Ex")    // true         also startsWith, endsWith, isEmpty, trim, split
+"b".compareTo("a")  // positive     negative = comes first, 0 = equal</pre>
+    <ul>
+      <li><b>Immutable.</b> <code>s.trim();</code> on its own line does nothing. You need <code>s = s.trim();</code>.</li>
+      <li>Compare text with <code>s.equals(t)</code> or <code>s.equalsIgnoreCase(t)</code>. <code>==</code> compares references: <code>"hi" == "hi"</code> is true (pooled literals), <code>new String("hi") == "hi"</code> is false.</li>
+      <li>Concatenation goes left to right: <code>1 + 2 + "3"</code> is <code>"33"</code>; <code>"1" + 2 + 3</code> is <code>"123"</code>; <code>"1" + (2 + 3)</code> is <code>"15"</code>; <code>'A' + 1 + ""</code> is <code>"66"</code>; <code>"" + 'A' + 1</code> is <code>"A1"</code>.</li>
+      <li><code>null</code>: <code>"x" + null</code> is <code>"xnull"</code>, but calling a method on a null String throws <code>NullPointerException</code>. <code>""</code> is an empty string, not null.</li>
+      <li><code>StringBuilder</code> is mutable: <code>append</code>, <code>insert(i, x)</code>, <code>reverse()</code>, <code>deleteCharAt</code>, <code>toString()</code> change the same object.</li>
+    </ul>
+    <h3><span class="obj">2.3</span>Arrays and ArrayList</h3>
+<pre class="mini hl">int[] a = new int[5];          // five 0s. Defaults: 0, 0.0, false, '\u0000', null
+int[] b = {4, 8, 15};          // b.length == 3 (a field: no parentheses)
+int c[] = new int[]{1, 2};     // also legal.  new int[2]{1,2} is a compile error
+b[b.length]                    // ArrayIndexOutOfBoundsException (last index is length - 1)
+int[][] g = new int[3][4];     // g.length == 3 rows, g[0].length == 4 columns, g[row][col]
+for (int v : b) { v = 0; }     // for-each gets a copy: the array is NOT changed
+System.out.println(b);         // prints something like [I@6d06d69c. Use Arrays.toString(b)</pre>
+<pre class="mini hl">import java.util.ArrayList;
+ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;();  // ArrayList&lt;int&gt; is a compile error: use Integer
+list.add("a");        // [a]
+list.add("c");        // [a, c]
+list.add(1, "b");     // [a, b, c]   inserts and shifts right
+list.set(0, "z");     // [z, b, c]   replaces, returns old value
+list.remove(0);       // [b, c]      by index, returns removed element
+list.remove("c");     // [b]         by value, returns true/false
+list.get(0); list.size(); list.contains("b"); list.indexOf("b"); list.isEmpty(); list.clear();</pre>
+    <div class="trap"><b>Trap</b>On <code>ArrayList&lt;Integer&gt;</code>, <code>nums.remove(1)</code> removes <b>index</b> 1. To remove the value 1 use <code>nums.remove(Integer.valueOf(1))</code>. Removing while looping forward by index skips the next element; removing inside a for-each throws <code>ConcurrentModificationException</code>. A bad <code>get</code> index throws <code>IndexOutOfBoundsException</code>.</div>
+    <h3><span class="obj">2.4</span>Parsing, casting and conversion</h3>
+    <ul>
+      <li>String to number: <code>Integer.parseInt("42")</code> → int, <code>Double.parseDouble("4.5")</code> → double, <code>Boolean.parseBoolean("true")</code>, <code>Integer.valueOf("42")</code> → Integer object.</li>
+      <li><code>Integer.parseInt("4.5")</code>, <code>("12a")</code>, <code>(" 7")</code>, <code>("")</code> all throw <code>NumberFormatException</code> (runtime).</li>
+      <li>Number to String: <code>String.valueOf(42)</code>, <code>Integer.toString(42)</code>, <code>"" + 42</code>.</li>
+      <li>Wrappers: <code>Byte Short Integer Long Float Double Character Boolean</code>. Autoboxing: <code>Integer x = 5;</code> Unboxing: <code>int y = x;</code> <code>Integer.MAX_VALUE</code>, <code>Integer.MIN_VALUE</code>.</li>
+      <li>Rounding: <code>(int) 2.7</code> → 2 (truncate). <code>Math.round(2.5)</code> → 3, <code>Math.round(-2.5)</code> → -2, <code>Math.round(2.49)</code> → 2. <code>Math.round(double)</code> returns a <b>long</b>.</li>
+      <li><code>(double) 7 / 2</code> → 3.5 (cast happens first). <code>(double)(7 / 2)</code> → 3.0 (int division happens first).</li>
+    </ul>
+    <h3><span class="obj">2.5</span>Arithmetic and operators</h3>
+    <ul>
+      <li>Precedence, high to low: <code>()</code> → <code>x++ x--</code> → <code>++x --x ! -x (cast)</code> → <code>* / %</code> → <code>+ -</code> → <code>&lt; &gt; &lt;= &gt;=</code> → <code>== !=</code> → <code>&amp;&amp;</code> → <code>||</code> → <code>?:</code> → <code>= += -=</code>. Same level goes left to right.</li>
+      <li>int ÷ int = int: <code>7 / 2</code> → 3, <code>-7 / 2</code> → -3, <code>1 / 3 * 3</code> → 0. Any double makes it double: <code>7 / 2.0</code> → 3.5.</li>
+      <li><code>%</code> remainder: <code>17 % 5</code> → 2, <code>3 % 8</code> → 3, <code>-7 % 3</code> → -1 (sign follows the left side), <code>5.5 % 2</code> → 1.5. Even test: <code>n % 2 == 0</code>.</li>
+      <li><code>x++</code> uses the old value, then adds. <code>++x</code> adds first. <code>int x = 5; int y = x++ + ++x;</code> → y = 5 + 7 = 12, x = 7.</li>
+      <li>Compound ops cast for you: <code>int n = 10; n += 2.9;</code> compiles (n = 12), but <code>n = n + 2.9;</code> doesn't. <code>n *= 2 + 3</code> means <code>n = n * (2 + 3)</code>.</li>
+      <li>Math: <code>Math.pow(2, 3)</code> → 8.0 (<b>double</b>, so <code>int p = Math.pow(2,3);</code> won't compile) · <code>Math.sqrt(25)</code> → 5.0 · <code>Math.abs(-4)</code> → 4 · <code>Math.max/min</code> · <code>Math.ceil(2.1)</code> → 3.0 · <code>Math.floor(-2.1)</code> → -3.0 · <code>Math.random()</code> → 0.0 up to but not including 1.0.</li>
+      <li>Random int from 1 to 6: <code>(int)(Math.random() * 6) + 1</code>. From 5 to 15: <code>(int)(Math.random() * 11) + 5</code> (count = max − min + 1).</li>
+      <li><code>5 / 0</code> and <code>5 % 0</code> throw <code>ArithmeticException</code>. <code>5.0 / 0</code> is <code>Infinity</code>; <code>0.0 / 0</code> is <code>NaN</code>. No exception for doubles.</li>
+    </ul>
+
+    <h2 id="c3"><small>Domain 3</small>Flow control</h2>
+    <h3><span class="obj">3.1</span>Branching</h3>
+    <ul>
+      <li>In an <code>if / else if / else</code> chain only the <b>first</b> true branch runs. Order matters: <code>if (score &gt;= 60)</code> before <code>if (score &gt;= 90)</code> means 95 gets the first branch.</li>
+      <li>No braces: the <code>if</code> controls exactly one statement. Indentation means nothing to Java. An <code>else</code> pairs with the nearest unmatched <code>if</code>.</li>
+      <li><code>if (x &gt; 5);</code> ends the if with an empty statement, so the block below always runs.</li>
+      <li><code>if (x = 5)</code> with an int is a compile error. <code>if (done = true)</code> with a boolean compiles, assigns, and is always true.</li>
+      <li><code>&amp;&amp;</code> and <code>||</code> short-circuit: <code>s != null &amp;&amp; s.length() &gt; 0</code> never calls length() on null. <code>&amp;</code> and <code>|</code> always evaluate both sides. <code>!</code> binds tightest, then <code>&amp;&amp;</code>, then <code>||</code>: <code>a || b &amp;&amp; c</code> means <code>a || (b &amp;&amp; c)</code>.</li>
+      <li>Ternary: <code>String r = (n % 2 == 0) ? "even" : "odd";</code></li>
+    </ul>
+<pre class="mini hl">switch (day) {              // int, char, byte, short, String, enum (and their wrappers)
+    case 1:                 // NOT long, float, double, boolean
+    case 7:  System.out.print("weekend "); break;
+    case 2:  System.out.print("mon ");     // no break: falls through into case 3
+    case 3:  System.out.print("tue ");     break;
+    default: System.out.print("other ");   // runs when no case matches
+}                           // day = 2 prints "mon tue "</pre>
+    <ul>
+      <li>Case labels must be constants and unique. String cases are case-sensitive. <code>default</code> can go anywhere, and execution falls through it too if there's no break.</li>
+    </ul>
+    <h3><span class="obj">3.2</span>Loops</h3>
+    <ul>
+      <li><code>while (cond)</code> checks first, so it may run 0 times. <code>do { } while (cond);</code> always runs at least once (note the semicolon).</li>
+      <li>Count iterations: <code>for (int i = a; i &lt; b; i++)</code> runs <b>b − a</b> times; with <code>&lt;=</code> it's <b>b − a + 1</b>. <code>for (int i = 0; i &lt; 10; i += 3)</code> runs for 0, 3, 6, 9: four times. <code>for (int i = 1; i &lt; 50; i *= 2)</code>: 1, 2, 4, 8, 16, 32 (six times).</li>
+      <li><code>break</code> leaves the innermost loop or switch. <code>continue</code> jumps to the next iteration (in a <code>for</code>, the update still runs; in a <code>while</code>, a <code>continue</code> before <code>i++</code> makes an infinite loop).</li>
+      <li>Nested loops: total inner runs = outer count × inner count (when independent). With <code>j &lt; i</code> it's a triangle: 0 + 1 + 2 + ...</li>
+      <li>A for-each loop has no index and can't replace elements. <code>for (String s : list)</code> works on arrays and ArrayLists.</li>
+      <li>Infinite: <code>for (;;)</code>, <code>while (true)</code> without a break, or a counter that moves the wrong way.</li>
+    </ul>
+
+    <h2 id="c4"><small>Domain 4</small>Object-oriented programming</h2>
+    <h3><span class="obj">4.1</span>Classes and constructors</h3>
+<pre class="mini hl">public class Account {                    // must live in Account.java (one public class per file)
+    private String owner;                 // fields = state
+    private double balance;
+    private static int count = 0;         // shared by ALL Account objects
+
+    public Account(String owner) {        // constructor: class name, NO return type
+        this(owner, 0.0);                 // this(...) must be the first statement
+    }
+    public Account(String owner, double balance) {   // overloaded constructor
+        this.owner = owner;               // this.owner = field, owner = parameter
+        this.balance = balance;
+        count++;
+    }
+    public double getBalance() { return balance; }   // getter
+    public void setBalance(double b) { balance = b; } // setter
+}</pre>
+    <ul>
+      <li><code>public void Account()</code> is a <b>method</b> named Account, not a constructor.</li>
+      <li>Write no constructor and Java gives you a free no-arg one. Write <b>any</b> constructor and that free one disappears: <code>new Account()</code> then won't compile.</li>
+      <li><code>owner = owner;</code> (without <code>this.</code>) assigns the parameter to itself. The field stays null. This is a logic error, not a compile error.</li>
+      <li>Inheritance: <code>class Savings extends Account</code>. One parent only. Constructors are not inherited. Private members exist but aren't accessible in the child.</li>
+      <li><code>super(...)</code> must be the first line of a child constructor. If you leave it out, Java inserts <code>super()</code>, which fails to compile when the parent has no no-arg constructor.</li>
+      <li>Overriding: same name and same parameters in the child (use <code>@Override</code>). <code>Account a = new Savings("x");</code> then <code>a.method()</code> runs <b>Savings'</b> version. You can't make an overriding method less visible. <code>super.method()</code> calls the parent's version.</li>
+    </ul>
+    <h3><span class="obj">4.2</span>Fields and access modifiers</h3>
+    <div class="tbl"><table>
+      <tr><th>Modifier</th><th>Same class</th><th>Same package</th><th>Subclass</th><th>Everywhere</th></tr>
+      <tr><td>private</td><td>yes</td><td>no</td><td>no</td><td>no</td></tr>
+      <tr><td>(none) package</td><td>yes</td><td>yes</td><td>same pkg only</td><td>no</td></tr>
+      <tr><td>protected</td><td>yes</td><td>yes</td><td>yes</td><td>no</td></tr>
+      <tr><td>public</td><td>yes</td><td>yes</td><td>yes</td><td>yes</td></tr>
+    </table></div>
+    <ul>
+      <li>Encapsulation: <code>private</code> fields plus public getters and setters (<code>getName()</code>, <code>setName(..)</code>, <code>isActive()</code> for booleans). Setters can validate.</li>
+      <li><code>static</code> field: one copy shared by every object; access it as <code>ClassName.field</code>. Classic use: counting objects created.</li>
+      <li><code>final</code> variable: assign once, then reassigning is a compile error. <code>static final</code> = class constant, named <code>UPPER_CASE</code>. A <code>final</code> method can't be overridden; a <code>final</code> class can't be extended.</li>
+    </ul>
+    <h3><span class="obj">4.3</span>Methods</h3>
+    <ul>
+      <li>Shape: <code>modifiers returnType name(parameters) { }</code>. A <code>void</code> method can't return a value (a bare <code>return;</code> is fine). A non-void method must return a value on every path, or it won't compile.</li>
+      <li>Overloading: same name, different parameter list (number, type or order). A different return type alone is not overloading (compile error). Java picks the closest match: <code>f(5)</code> prefers <code>f(int)</code> over <code>f(double)</code>; if there's only <code>f(double)</code>, the int widens.</li>
+      <li>A <code>static</code> method has no <code>this</code>. It can't touch instance fields or call instance methods directly (compile error: "non-static ... cannot be referenced from a static context"). It must create an object first.</li>
+      <li><b>Java is pass-by-value.</b> A primitive argument is copied: the caller's variable never changes. An object argument copies the reference: changing the object's fields is visible to the caller, but pointing the parameter at a new object is not.</li>
+    </ul>
+    <h3><span class="obj">4.4</span>Objects and references</h3>
+    <ul>
+      <li><code>Dog d = new Dog();</code> → <code>new</code> creates the object, runs the constructor, returns a reference. <code>Dog e = d;</code> copies the reference: both names point to one object.</li>
+      <li><code>==</code> on objects: same object? <code>.equals()</code>: same content (when the class overrides it, like String).</li>
+      <li><code>null</code> = points at nothing. Calling a method on it throws <code>NullPointerException</code>. Object fields default to null.</li>
+      <li>Garbage collection: an object becomes eligible once nothing references it (variable set to <code>null</code>, reassigned, or out of scope). The JVM decides when. <code>System.gc()</code> only suggests it; you can't force it.</li>
+      <li><code>System.out.println(obj)</code> calls <code>obj.toString()</code>. Without an override it prints something like <code>Dog@1b6d3586</code>.</li>
+    </ul>
+
+    <h2 id="c5"><small>Domain 5</small>Compilation and debugging</h2>
+    <h3><span class="obj">5.1</span>Three kinds of errors</h3>
+    <div class="tbl"><table>
+      <tr><th>Kind</th><th>When</th><th>Examples</th></tr>
+      <tr><td>Syntax / compile</td><td><code>javac</code> refuses; no .class file</td><td>missing <code>;</code> or <code>}</code>, misspelled keyword, undeclared or uninitialized variable, <code>int x = "5";</code>, missing return, calling a method that doesn't exist, <code>string</code> instead of <code>String</code></td></tr>
+      <tr><td>Runtime</td><td>compiles, crashes while <code>java</code> runs it</td><td><code>ArithmeticException</code> (int ÷ 0), <code>ArrayIndexOutOfBoundsException</code>, <code>StringIndexOutOfBoundsException</code>, <code>IndexOutOfBoundsException</code>, <code>NullPointerException</code>, <code>NumberFormatException</code>, <code>InputMismatchException</code>, <code>ClassCastException</code></td></tr>
+      <tr><td>Logic</td><td>compiles and runs, wrong answer</td><td>off-by-one, wrong operator, int division, <code>=</code> vs <code>==</code> on booleans, wrong order of conditions, <code>owner = owner</code></td></tr>
+    </table></div>
+<pre class="mini">Exception in thread "main" java.lang.ArithmeticException: / by zero
+    at Calc.divide(Calc.java:12)      &lt;- where it actually happened (top frame)
+    at Calc.main(Calc.java:5)         &lt;- the call that led there</pre>
+    <ul><li>Print-statement debugging: add <code>System.out.println("i=" + i + " total=" + total);</code> inside the loop to watch values change.</li></ul>
+    <h3><span class="obj">5.2</span>Exception handling</h3>
+<pre class="mini hl">try {
+    int r = 10 / d;                 // if this throws, the rest of try is skipped
+    System.out.println("done");
+} catch (ArithmeticException e) {   // most specific first
+    System.out.println(e.getMessage());   // "/ by zero"
+} catch (Exception e) {             // broadest last; reversing the order = compile error
+    System.out.println(e);          // "java.lang.ArithmeticException: / by zero"
+} finally {
+    System.out.println("always");   // runs whether or not anything was thrown, even after return
+}
+System.out.println("after");        // runs if the exception was caught</pre>
+    <ul>
+      <li>Hierarchy: <code>Throwable</code> → <code>Error</code> (OutOfMemoryError, StackOverflowError: don't catch) and <code>Exception</code> → <code>RuntimeException</code> (unchecked) plus the checked ones.</li>
+      <li><b>Checked</b> (<code>IOException</code>, <code>FileNotFoundException</code>, <code>Exception</code> itself): you must catch it or declare <code>throws IOException</code> in the method header, or it won't compile. <b>Unchecked</b> (RuntimeException and its subclasses): optional.</li>
+      <li><code>throw new IllegalArgumentException("Age can't be negative");</code> throws one. <code>throws</code> (with an s) goes in the method signature.</li>
+      <li>Multi-catch: <code>catch (NumberFormatException | ArithmeticException e)</code>. A <code>try</code> needs at least one <code>catch</code> or a <code>finally</code>.</li>
+      <li>If no catch matches, <code>finally</code> still runs, then the exception keeps going up and the program crashes with a stack trace.</li>
+      <li><code>e.getMessage()</code> = message only. <code>e.toString()</code> / <code>println(e)</code> = class name + message. <code>e.printStackTrace()</code> = full trace.</li>
+    </ul>
+
+    <h2 id="c6"><small>Exam day</small>How the test works</h2>
+    <ul>
+      <li>About 35 to 45 items in 50 minutes; 700 out of 1000 (scaled) passes. Budget a bit over a minute per question and mark slow ones for review.</li>
+      <li>Formats: multiple choice, "choose two/three", <b>Yes/No hot-area grids</b> (each statement scored), <b>drop-down code completion</b> (pick the right code for each blank), <b>drag-and-drop</b> (match code to slots or put lines in order).</li>
+      <li>Code is shown with line numbers. "Which line causes the compile error?" means you check each line for type mismatches, scope and missing returns, not logic.</li>
+      <li>On "complete the code" items, every blank has to compile <b>and</b> produce the stated output. Check the types: <code>int</code> vs <code>double</code> vs <code>String</code>, <code>.length</code> vs <code>.length()</code> vs <code>.size()</code>.</li>
+      <li>Wrong answers are designed to match a common mistake. If you find your answer instantly, re-trace it once before moving on.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+/*__BANKS__*/
+</script>
+<script>
+(function(){
+"use strict";
+const OBJ = {
+  "1.1":"main() & command line","1.2":"Console I/O & comments","1.3":"Variable scope",
+  "2.1":"Primitive types","2.2":"Strings","2.3":"Arrays & ArrayList","2.4":"Parsing & casting","2.5":"Arithmetic & operators",
+  "3.1":"Branching (if / switch)","3.2":"Loops",
+  "4.1":"Classes & constructors","4.2":"Fields & access","4.3":"Methods","4.4":"Objects & references",
+  "5.1":"Errors & debugging","5.2":"Exception handling"
+};
+const DOMAINS = [["1","Java fundamentals"],["2","Data types & expressions"],["3","Flow control"],["4","Object-oriented programming"],["5","Compilation & debugging"]];
+const TYPE_LABEL = {mc:"Multiple choice", multi:"Choose multiple", type:"Type the output", yn:"Yes / No grid"};
+const QB = (window.QB || []).filter(q => OBJ[q.obj] && TYPE_LABEL[q.type]);
+
+const KEY = "itsjava.v1";
+let store = {};
+try { store = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { store = {}; }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
+function rec(id){ return store[id] || (store[id] = {s:0, c:0, last:null, flag:false}); }
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+const fmtP = s => fmt(s).replace(/\n/g, "<br>");
+function shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function dedent(code){
+  const lines = String(code).replace(/\t/g, "    ").replace(/^\s*\n/, "").replace(/\s+$/, "").split("\n");
+  const ind = Math.min(...lines.filter(l => l.trim()).map(l => l.match(/^ */)[0].length));
+  return lines.map(l => l.slice(isFinite(ind) ? ind : 0)).join("\n");
+}
+const KW = new Set("abstract boolean break byte case catch char class continue default do double else extends final finally float for if implements import instanceof int interface long new null package private protected public return short static super switch this throw throws true false try void while var".split(" "));
+function hl(code){
+  const re = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|("(?:\\.|[^"\\\n])*")|('(?:\\.|[^'\\\n])*')|\b(\d+(?:\.\d+)?[fFdDlL]?)\b|\b([A-Za-z_$][\w$]*)\b/g;
+  let out = "", last = 0, m;
+  while ((m = re.exec(code))) {
+    out += esc(code.slice(last, m.index));
+    const t = m[0];
+    if (m[1]) out += `<span class="t-c">${esc(t)}</span>`;
+    else if (m[2] || m[3]) out += `<span class="t-s">${esc(t)}</span>`;
+    else if (m[4]) out += `<span class="t-n">${t}</span>`;
+    else if (KW.has(t)) out += `<span class="t-k">${t}</span>`;
+    else if (/^[A-Z]/.test(t)) out += `<span class="t-t">${t}</span>`;
+    else out += t;
+    last = re.lastIndex;
+  }
+  return out + esc(code.slice(last));
+}
+function codeHTML(code){
+  const c = dedent(code), n = c.split("\n").length;
+  const gut = Array.from({length:n}, (_, i) => String(i + 1).padStart(2, "0")).join("\n");
+  return `<div class="code"><pre class="gut" aria-hidden="true">${gut}</pre><pre class="src">${hl(c)}</pre></div>`;
+}
+const optBody = t => /\n/.test(t) ? `<pre class="optcode">${hl(dedent(t))}</pre>` : `<span>${fmt(t)}</span>`;
+
+/* ---------- views ---------- */
+function showView(v){
+  $$(".tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.view === v)));
+  $("#v-practice").hidden = v !== "practice";
+  $("#v-cram").hidden = v !== "cram";
+}
+$$(".tab").forEach(t => t.addEventListener("click", () => { showView(t.dataset.view); window.scrollTo(0, 0); }));
+$$(".mini.hl").forEach(p => { p.innerHTML = hl(p.textContent); });
+$$(".jump a").forEach(a => a.addEventListener("click", e => { e.preventDefault(); const el = document.getElementById(a.getAttribute("href").slice(1)); if (el) window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - 64, behavior: "smooth"}); }));
+
+/* ---------- setup ---------- */
+function accFor(qs){
+  let s = 0, c = 0;
+  qs.forEach(q => { const r = store[q.id]; if (r) { s += r.s; c += r.c; } });
+  return s ? Math.round(c / s * 100) : null;
+}
+const missPool = () => QB.filter(q => store[q.id] && (store[q.id].last === 0 || store[q.id].flag));
+function renderSetup(){
+  const prev = new Set($$("#objs input").filter(i => i.checked).map(i => i.value));
+  const first = !$$("#objs input").length;
+  $("#objs").innerHTML = DOMAINS.map(([d, name]) => `<fieldset class="dom"><legend>${d} · ${esc(name)}</legend><div class="chips">` +
+    Object.keys(OBJ).filter(o => o[0] === d).map(o => {
+      const qs = QB.filter(q => q.obj === o), a = accFor(qs);
+      return `<label class="chip"><input type="checkbox" value="${o}" ${first || prev.has(o) ? "checked" : ""}><span class="cn">${o}</span><span class="ct">${esc(OBJ[o])}</span><span class="cs${a !== null && a < 70 ? " lo" : ""}">${qs.length}${a !== null ? " · " + a + "%" : ""}</span></label>`;
+    }).join("") + `</div></fieldset>`).join("");
+  const seen = QB.filter(q => store[q.id] && store[q.id].s > 0);
+  $("#st-total").textContent = QB.length;
+  $("#st-seen").textContent = seen.length;
+  const a = accFor(QB);
+  $("#st-acc").textContent = a === null ? "–" : a + "%";
+  const m = missPool().length;
+  $("#st-miss").textContent = m;
+  $("#redo").disabled = !m;
+  $("#redo").textContent = m ? `Redo misses & guesses (${m})` : "Redo misses";
+}
+$("#all-on").onclick = () => $$("#objs input").forEach(i => i.checked = true);
+$("#all-off").onclick = () => $$("#objs input").forEach(i => i.checked = false);
+function prio(q){ const r = store[q.id]; if (!r || !r.s) return 1; if (r.last === 0) return 0; if (r.flag) return 0.5; return 2 + r.c / r.s; }
+$("#go-drill").onclick = () => {
+  const objs = new Set($$("#objs input").filter(i => i.checked).map(i => i.value));
+  const incType = $("#inc-type").checked;
+  let pool = QB.filter(q => objs.has(q.obj) && (incType || q.type !== "type"));
+  if (!pool.length) { $("#setup-msg").textContent = "Pick at least one topic."; return; }
+  $("#setup-msg").textContent = "";
+  pool = shuffle(pool);
+  if ($("input[name=order]:checked").value === "weak") pool.sort((x, y) => prio(x) - prio(y));
+  const c = $("input[name=count]:checked").value;
+  if (c !== "all") pool = pool.slice(0, +c);
+  startSession(shuffle(pool.slice(0, Math.ceil(pool.length / 2))).concat(pool.slice(Math.ceil(pool.length / 2))), "drill");
+};
+$("#redo").onclick = () => { const p = missPool(); if (p.length) startSession(shuffle(p), "drill"); };
+$("#go-mock").onclick = () => {
+  const N = Math.min(40, QB.length), by = {};
+  QB.forEach(q => (by[q.obj] = by[q.obj] || []).push(q));
+  let pick = [];
+  Object.keys(by).forEach(o => pick.push(...shuffle(by[o]).slice(0, Math.max(1, Math.round(by[o].length * N / QB.length)))));
+  pick = shuffle(pick);
+  if (pick.length < N) pick.push(...shuffle(QB.filter(q => !pick.includes(q))).slice(0, N - pick.length));
+  startSession(pick.slice(0, N), "mock");
+};
+let resetArm = false;
+$("#reset").onclick = () => {
+  if (!resetArm) { resetArm = true; $("#reset").textContent = "Click again to erase all progress"; setTimeout(() => { resetArm = false; $("#reset").textContent = "Reset my progress"; }, 4000); return; }
+  store = {}; save(); resetArm = false; $("#reset").textContent = "Reset my progress"; renderSetup();
+};
+
+/* ---------- session ---------- */
+let S = null;
+const blank = q => q.type === "multi" ? [] : q.type === "yn" ? q.statements.map(() => null) : q.type === "type" ? "" : null;
+function startSession(qs, mode){
+  S = { mode, i:0, right:0, wrong:0, msg:"", finished:false, quitArm:false, finishArm:false,
+    items: qs.map(q => ({ q, perm: (q.type === "mc" || q.type === "multi") ? shuffle(q.options.map((_, k) => k)) : null, resp: blank(q), done:false, ok:null, guessed:false, flag:false, shown:false })),
+    deadline: mode === "mock" ? Date.now() + 50 * 60 * 1000 : null };
+  $("#setup").hidden = true; $("#session").hidden = false;
+  render(true);
+}
+function hasResp(it){ const r = it.resp, t = it.q.type; return t === "mc" ? r !== null : t === "multi" ? r.length > 0 : t === "yn" ? r.every(v => v !== null) : String(r).trim() !== ""; }
+const norm = s => String(s).replace(/\r/g, "").replace(/[“”]/g, '"').replace(/[‘’]/g, "'").split("\n").map(l => l.trim().replace(/\s+/g, " ")).join("\n").replace(/^\n+|\n+$/g, "");
+function grade(it){
+  const q = it.q, r = it.resp;
+  if (q.type === "mc") return r === q.answer;
+  if (q.type === "multi") { const a = q.answer.slice().sort(), b = r.slice().sort(); return a.length === b.length && a.every((v, i) => v === b[i]); }
+  if (q.type === "yn") return q.answer.every((v, i) => r[i] === v);
+  return [q.answer].concat(q.accept || []).some(a => norm(a) === norm(r));
+}
+function record(it){
+  const r = rec(it.q.id); r.s++; if (it.ok) { r.c++; r.flag = false; } r.last = it.ok ? 1 : 0;
+  if (it.guessed) r.flag = true;
+  save();
+}
+function answerHTML(it, rev){
+  const q = it.q, r = it.resp;
+  if (q.type === "mc" || q.type === "multi") {
+    const multi = q.type === "multi";
+    return (multi ? `<p class="hint">Select ${q.answer.length}.</p>` : "") + `<div class="opts" role="${multi ? "group" : "radiogroup"}">` + it.perm.map((k, d) => {
+      const sel = multi ? r.includes(k) : r === k, isAns = multi ? q.answer.includes(k) : q.answer === k;
+      let cls = "opt" + (multi ? " box" : "") + (sel ? " sel" : "");
+      if (rev) cls += isAns ? " right" : sel ? " wrong" : "";
+      const tag = rev && isAns ? `<span class="tag">Answer</span>` : rev && sel ? `<span class="tag">Your pick</span>` : "";
+      return `<button type="button" class="${cls}" data-act="opt" data-k="${k}" aria-pressed="${sel}" ${rev ? "disabled" : ""}><span class="key">${d + 1}</span>${optBody(q.options[k])}${tag}</button>`;
+    }).join("") + `</div>`;
+  }
+  if (q.type === "yn") {
+    return `<div class="yn"><div class="yn-h"><span>Statement</span><span>Yes</span><span>No</span></div>` + q.statements.map((s, k) => {
+      const v = r[k], a = q.answer[k];
+      const b = (val, label) => { let c = "ynb" + (v === val ? " sel" : ""); if (rev) c += a === val ? " right" : v === val ? " wrong" : ""; return `<button type="button" class="${c}" data-act="yn" data-k="${k}" data-v="${val ? 1 : 0}" aria-pressed="${v === val}" ${rev ? "disabled" : ""}>${label}</button>`; };
+      return `<div class="yn-r"><div class="yn-s">${fmt(s)}</div>${b(true, "Yes")}${b(false, "No")}</div>`;
+    }).join("") + `</div>`;
+  }
+  if (rev) return `<div class="typed-rev"><div><span class="lbl">You typed</span><pre class="out ${it.ok ? "ok" : "no"}">${esc(r || "(blank)")}</pre></div><div><span class="lbl">Actual output</span><pre class="out ok">${esc(q.answer)}</pre></div></div>`;
+  return `<label class="lbl" for="typed">Type exactly what prints. New line for each <code>println</code>. Ctrl+Enter checks.</label><textarea id="typed" rows="3" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="output"></textarea>`;
+}
+function gridHTML(){
+  return `<div class="grid" aria-label="Jump to question">` + S.items.map((it, k) =>
+    `<button type="button" data-act="goto" data-i="${k}" class="${k === S.i ? "cur" : ""}${hasResp(it) ? " ans" : ""}${it.flag ? " flag" : ""}" aria-label="Question ${k + 1}">${k + 1}</button>`).join("") + `</div>`;
+}
+function render(scroll){
+  const it = S.items[S.i], q = it.q, n = S.items.length, mock = S.mode === "mock", rev = !mock && it.done, last = S.i === n - 1;
+  const done = S.items.filter(x => x.done).length;
+  let acts;
+  if (mock) acts = `<button class="btn" data-act="prev" type="button" ${S.i === 0 ? "disabled" : ""}>Back</button><button class="btn${it.flag ? " on" : ""}" data-act="flag" type="button">${it.flag ? "Flagged" : "Flag for review"}</button><button class="btn primary" data-act="next" type="button">${last ? "Submit exam" : "Next"}</button>`;
+  else if (!it.done) acts = `<button class="btn primary" data-act="check" type="button">Check answer</button><button class="btn" data-act="reveal" type="button">Show answer</button>`;
+  else acts = `<button class="btn primary" data-act="next" type="button">${last ? "See results" : "Next question"}</button>${it.ok ? `<button class="btn${it.guessed ? " on" : ""}" data-act="guess" type="button">${it.guessed ? "Saved for review" : "I guessed: review later"}</button>` : ""}`;
+  $("#session").innerHTML = `
+    <div class="sbar"><button class="link" data-act="quit" type="button">${mock ? (S.quitArm ? "Click again to abandon exam" : "Quit exam") : "End session"}</button>
+      ${mock ? `<span class="timer" id="timer"></span>` : `<span class="tally"><b class="g">${S.right}</b> right · <b class="r">${S.wrong}</b> wrong</span>`}</div>
+    <div class="prog"><i style="width:${((mock ? S.items.filter(hasResp).length : done) / n * 100).toFixed(1)}%"></i></div>
+    ${mock ? gridHTML() : ""}
+    <article class="card" id="qcard">
+      <div class="qmeta"><span class="obj">${q.obj}</span><span>${esc(OBJ[q.obj])}</span><span class="tp">${TYPE_LABEL[q.type]}</span><span class="qn">${S.i + 1} / ${n}</span></div>
+      <div class="qtext">${fmtP(q.q)}</div>
+      ${q.code ? codeHTML(q.code) : ""}
+      ${answerHTML(it, rev)}
+      ${rev ? `<div class="fb ${it.ok ? "ok" : "no"}"><strong>${it.ok ? "Correct" : it.shown ? "Answer shown" : "Not quite"}</strong><p>${fmtP(q.why || "")}</p></div>` : ""}
+      <div class="actions">${acts}<span class="msg">${esc(S.msg)}</span><span class="keys">${q.type === "type" ? "" : "Keys: 1–" + (it.perm ? it.perm.length : 2) + " pick · "}Enter ${mock ? "next" : "check / next"}</span></div>
+    </article>`;
+  if (q.type === "type" && !rev) { const ta = $("#typed"); ta.value = it.resp; if (!scroll || window.matchMedia("(pointer:fine)").matches) ta.focus({preventScroll:true}); }
+  if (scroll) { const c = $("#session"); window.scrollTo({top: Math.max(0, c.getBoundingClientRect().top + window.scrollY - 60)}); }
+  tick();
+}
+function choose(k){
+  const it = S.items[S.i]; if (S.mode === "drill" && it.done) return;
+  if (it.q.type === "multi") { const i = it.resp.indexOf(k); if (i >= 0) it.resp.splice(i, 1); else it.resp.push(k); }
+  else it.resp = k;
+  S.msg = ""; S.finishArm = false; render();
+}
+function check(){
+  const it = S.items[S.i];
+  if (!hasResp(it)) { S.msg = it.q.type === "yn" ? "Answer every row first, or press Show answer." : "Answer first, or press Show answer."; render(); return; }
+  it.done = true; it.ok = grade(it); it.ok ? S.right++ : S.wrong++; record(it); S.msg = ""; render();
+}
+function reveal(){ const it = S.items[S.i]; it.done = true; it.ok = false; it.shown = true; S.wrong++; record(it); S.msg = ""; render(); }
+function go(i){ if (i < 0 || i >= S.items.length) return; S.i = i; S.msg = ""; S.quitArm = false; S.finishArm = false; render(true); }
+function next(){
+  const it = S.items[S.i], last = S.i === S.items.length - 1;
+  if (S.mode === "drill") { if (!it.done) return check(); return last ? results() : go(S.i + 1); }
+  if (!last) return go(S.i + 1);
+  const open = S.items.filter(x => !hasResp(x)).length;
+  if (open && !S.finishArm) { S.finishArm = true; S.msg = `${open} unanswered. Press Submit again to finish anyway.`; render(); return; }
+  finishMock();
+}
+function finishMock(){
+  if (S.finished) return; S.finished = true;
+  S.items.forEach(it => { it.done = true; it.ok = hasResp(it) && grade(it); it.ok ? S.right++ : S.wrong++; record(it); });
+  results();
+}
+function primary(){ if (S.mode === "drill" && !S.items[S.i].done) check(); else next(); }
+function tick(){
+  if (!S || S.mode !== "mock" || S.finished) return;
+  const ms = S.deadline - Date.now(), el = $("#timer");
+  if (ms <= 0) { finishMock(); return; }
+  if (el) { const m = Math.floor(ms / 60000), s = Math.floor(ms / 1000) % 60; el.textContent = `${m}:${String(s).padStart(2, "0")} left`; el.classList.toggle("low", ms < 5 * 60000); }
+}
+setInterval(tick, 1000);
+function quit(){
+  if (S.mode === "mock") { if (!S.quitArm) { S.quitArm = true; render(); return; } S.finished = true; return home(); }
+  if (S.items.some(it => it.done)) results(); else home();
+}
+function home(){ S = null; $("#session").hidden = true; $("#setup").hidden = false; renderSetup(); window.scrollTo(0, 0); }
+
+$("#session").addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b || !S) return;
+  const it = S.items[S.i];
+  switch (b.dataset.act) {
+    case "opt": choose(+b.dataset.k); break;
+    case "yn": if (!(S.mode === "drill" && it.done)) { it.resp[+b.dataset.k] = b.dataset.v === "1"; S.msg = ""; render(); } break;
+    case "check": check(); break;
+    case "reveal": reveal(); break;
+    case "next": next(); break;
+    case "prev": go(S.i - 1); break;
+    case "goto": go(+b.dataset.i); break;
+    case "flag": it.flag = !it.flag; render(); break;
+    case "guess": it.guessed = !it.guessed; rec(it.q.id).flag = it.guessed; save(); render(); break;
+    case "quit": quit(); break;
+    case "retry": { const p = S.review.map(x => x.q); startSession(shuffle(p), "drill"); break; }
+    case "home": home(); break;
+  }
+});
+$("#session").addEventListener("input", e => { if (e.target.id === "typed" && S) { S.items[S.i].resp = e.target.value; S.finishArm = false; } });
+document.addEventListener("keydown", e => {
+  if (!S || $("#session").hidden || S.view === "results" || e.altKey || e.metaKey && e.key !== "Enter") return;
+  if (e.target.tagName === "TEXTAREA") { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); primary(); } return; }
+  if (e.target.tagName === "INPUT") return;
+  const it = S.items[S.i];
+  if (e.key === "Enter") { e.preventDefault(); primary(); }
+  else if (/^[1-9]$/.test(e.key) && it.perm && +e.key <= it.perm.length) { e.preventDefault(); choose(it.perm[+e.key - 1]); }
+  else if (S.mode === "mock" && e.key === "ArrowRight") go(S.i + 1);
+  else if (S.mode === "mock" && e.key === "ArrowLeft") go(S.i - 1);
+});
+
+/* ---------- results ---------- */
+function ansHTML(q, r){
+  const none = "<em>No answer</em>";
+  if (q.type === "mc") return r === null || r === undefined ? none : optBody(q.options[r]);
+  if (q.type === "multi") return r && r.length ? r.map(k => `<div style="margin-bottom:4px">${optBody(q.options[k])}</div>`).join("") : none;
+  if (q.type === "yn") return q.statements.map((s, k) => `<div class="ynline"><b>${r[k] === null || r[k] === undefined ? "–" : r[k] ? "Yes" : "No"}</b> · ${fmt(s)}</div>`).join("");
+  return `<pre class="out">${esc(r || "(blank)")}</pre>`;
+}
+function results(){
+  const mock = S.mode === "mock", done = S.items.filter(it => it.done);
+  const right = done.filter(it => it.ok).length, pct = done.length ? Math.round(right / done.length * 100) : 0;
+  S.view = "results";
+  S.review = done.filter(it => !it.ok || it.guessed);
+  const objs = Object.keys(OBJ).filter(o => done.some(it => it.q.obj === o));
+  const bars = objs.map(o => {
+    const xs = done.filter(it => it.q.obj === o), c = xs.filter(it => it.ok).length, p = c / xs.length;
+    return `<div class="bar"><span class="nm"><span class="obj">${o}</span> ${esc(OBJ[o])}</span><span class="track"><span class="fill" style="display:block;width:${Math.max(4, p * 100)}%;background:var(${p >= .8 ? "--good" : p >= .6 ? "--hot" : "--bad"})"></span></span><span class="n">${c}/${xs.length}</span></div>`;
+  }).join("");
+  const rv = S.review.map(it => { const q = it.q;
+    return `<details class="rv"><summary><span class="obj">${q.obj}</span><span class="s">${fmt(q.q.split("\n")[0])}</span><span class="tag ${it.ok ? "gs" : "bad"}">${it.ok ? "Guessed" : "Missed"}</span></summary>
+      <div class="rv-b"><div class="qtext">${fmtP(q.q)}</div>${q.code ? codeHTML(q.code) : ""}
+      <div class="cols"><div><span class="lbl">Your answer</span>${ansHTML(q, it.resp)}</div><div><span class="lbl">Correct answer</span>${ansHTML(q, q.answer)}</div></div>
+      <p class="why">${fmtP(q.why || "")}</p></div></details>`; }).join("");
+  $("#session").innerHTML = `<article class="card">
+    <div class="eyebrow">${mock ? "Mock exam result" : "Drill result"}</div>
+    <div class="score"><b>${pct}%</b><span>${right} of ${done.length} correct</span>
+      ${mock ? `<span class="${pct >= 80 ? "pass" : "fail"}">${pct >= 80 ? "Ready. Comfortable margin over 700/1000." : pct >= 70 ? "Borderline. Drill the red topics below." : "Not there yet. Drill the red topics below."}</span>` : ""}</div>
+    <div class="bars">${bars}</div>
+    <div class="row">${S.review.length ? `<button class="btn primary" data-act="retry" type="button">Drill these ${S.review.length} again</button>` : ""}<button class="btn" data-act="home" type="button">Back to start</button></div>
+  </article>
+  ${S.review.length ? `<h2 style="font-size:22px;margin:26px 0 10px">Review: missed and guessed</h2>${rv}` : `<p style="margin-top:20px">Nothing missed. Try a different topic mix or the mock exam.</p>`}`;
+  window.scrollTo(0, 0);
+}
+
+renderSetup();
+if (location.hash === "#cram") showView("cram");
+})();
+</script>

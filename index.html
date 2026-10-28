@@ -1,0 +1,3150 @@
+<title>ITS Java Final Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: one 880px study column; sticky tab bar; the question card is the only framed object. Code is always on a dark "editor" panel. */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --sunk:#e8ecf2; --ink:#142033; --muted:#566275; --line:#d3dae5;
+  --accent:#1c5aa6; --accent-ink:#ffffff; --accent-soft:#e2ebf8; --hot:#bf5b08;
+  --good:#16764a; --good-soft:#dff2e7; --bad:#b3302a; --bad-soft:#fae4e1; --note-soft:#fcefd9;
+  --code-bg:#0f1826; --code-fg:#dbe3ee; --code-gut:#5c6a7f; --t-k:#82b2ff; --t-s:#a3d69e; --t-n:#f2b56e; --t-c:#7c899c; --t-t:#e3c4ff;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c1119; --surface:#131a25; --sunk:#1a2331; --ink:#e3e8f0; --muted:#98a4b6; --line:#263143;
+  --accent:#6ba6f3; --accent-ink:#0a1220; --accent-soft:#182940; --hot:#f0923d;
+  --good:#4fc386; --good-soft:#11301f; --bad:#f27a6e; --bad-soft:#3a1916; --note-soft:#33270f;
+  --code-bg:#080d15; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0c1119; --surface:#131a25; --sunk:#1a2331; --ink:#e3e8f0; --muted:#98a4b6; --line:#263143;
+  --accent:#6ba6f3; --accent-ink:#0a1220; --accent-soft:#182940; --hot:#f0923d;
+  --good:#4fc386; --good-soft:#11301f; --bad:#f27a6e; --bad-soft:#3a1916; --note-soft:#33270f;
+  --code-bg:#080d15; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--f-body);-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:22px 72px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+code{font-family:var(--f-mono);font-size:.9em;background:var(--sunk);border:1px solid var(--line);border-radius:4px;padding:0 .3em;white-space:pre-wrap;overflow-wrap:anywhere}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 20px;margin-bottom:14px}
+.eyebrow{font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--hot)}
+.top h1{font-size:clamp(28px,6vw,40px);font-weight:700;margin-top:6px;letter-spacing:-.01em}
+.top h1 span{color:var(--accent)}
+.facts{display:flex;flex-wrap:wrap;gap:6px;font:500 12.5px/1 var(--f-mono);color:var(--muted)}
+.facts span{border:1px solid var(--line);border-radius:999px;padding:6px 10px;background:var(--surface)}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:4px;background:var(--bg);padding-block:8px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.tab{border:0;background:none;padding:8px 14px;border-radius:8px;font-weight:600;color:var(--muted);cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.tab:hover:not([aria-selected="true"]){background:var(--sunk);color:var(--ink)}
+
+/* setup */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:22px}
+.stats div{background:var(--surface);padding:12px 14px}
+.stats b{display:block;font:700 24px/1.1 var(--f-display);font-variant-numeric:tabular-nums}
+.stats small{color:var(--muted);font-size:12.5px}
+@media (max-width:520px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.mode{display:grid;gap:18px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.panel h2{font-size:22px}
+.panel > p{color:var(--muted);margin:6px 0 14px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.dom{border:0;padding:0;margin:0 0 12px}
+.dom legend{font:600 12px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;padding:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:baseline;gap:6px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer;background:var(--bg);user-select:none;max-width:100%}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip .cn{font:600 12px var(--f-mono);color:var(--muted)}
+.chip .cs{font:500 11.5px var(--f-mono);color:var(--muted)}
+.chip .cs.lo{color:var(--bad)}
+.chip:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.chip:has(input:checked) .cn{color:var(--accent)}
+.chip:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.opts-row{display:flex;flex-wrap:wrap;gap:14px 26px;margin:14px 0 16px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg label{position:relative;cursor:pointer}
+.seg input{position:absolute;opacity:0}
+.seg span{display:block;padding:6px 12px;font-weight:500;font-size:14px;border-right:1px solid var(--line)}
+.seg label:last-child span{border-right:0}
+.seg input:checked + span{background:var(--ink);color:var(--bg)}
+.seg input:focus-visible + span{outline:2px solid var(--accent);outline-offset:-2px}
+.optlbl{display:block;font:600 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.check{display:inline-flex;gap:8px;align-items:center;cursor:pointer}
+.check input{width:17px;height:17px;accent-color:var(--accent)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:10px 16px;font-weight:600;cursor:pointer}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.on{background:var(--note-soft);border-color:var(--hot)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.link{border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:4px 0}
+.msg{color:var(--bad);font-size:14px;min-height:1em}
+.routine{margin:0;padding-left:20px;display:grid;gap:6px}
+.routine b{font-weight:600}
+
+/* session */
+.sbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.tally{font:500 13px var(--f-mono);color:var(--muted)}
+.tally .g{color:var(--good)} .tally .r{color:var(--bad)}
+.timer{font:600 15px var(--f-mono);font-variant-numeric:tabular-nums}
+.timer.low{color:var(--bad)}
+.prog{height:4px;background:var(--sunk);border-radius:4px;overflow:hidden;margin-bottom:14px}
+.prog i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.grid{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px}
+.grid button{width:30px;height:28px;border:1px solid var(--line);background:var(--surface);border-radius:5px;font:500 12px var(--f-mono);cursor:pointer;padding:0}
+.grid button.ans{background:var(--sunk)}
+.grid button.flag{border-color:var(--hot);color:var(--hot)}
+.grid button.cur{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
+@media (max-width:520px){.card{padding:16px 14px}}
+.qmeta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:12.5px;color:var(--muted);margin-bottom:12px}
+.qmeta .obj,.obj{font:600 12px var(--f-mono);color:var(--accent);background:var(--accent-soft);border-radius:5px;padding:2px 6px}
+.qmeta .qn{margin-left:auto;font-family:var(--f-mono)}
+.qmeta .tp{font-weight:600;color:var(--hot)}
+.qtext{font-size:16.5px;line-height:1.55;margin-bottom:14px;max-width:70ch}
+.code{display:grid;grid-template-columns:auto minmax(0,1fr);background:var(--code-bg);color:var(--code-fg);border-radius:10px;overflow-x:auto;margin:0 0 16px;font:13.5px/1.6 var(--f-mono)}
+.code pre{margin:0;padding:12px 14px;white-space:pre;font:inherit}
+.code .gut{color:var(--code-gut);text-align:right;padding-right:10px;border-right:1px solid #ffffff14;user-select:none}
+.code .src{overflow:visible}
+.t-k{color:var(--t-k)} .t-s{color:var(--t-s)} .t-n{color:var(--t-n)} .t-c{color:var(--t-c);font-style:italic} .t-t{color:var(--t-t)}
+.hint{font-size:13.5px;color:var(--hot);font-weight:600;margin:0 0 8px}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:11px 12px;cursor:pointer;min-width:0}
+.opt:hover:not(:disabled){border-color:var(--muted)}
+.opt > span:not(.key):not(.tag){flex:1;min-width:0;overflow-wrap:anywhere}
+.opt .key{flex:none;width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font:600 12px var(--f-mono);background:var(--sunk);color:var(--muted)}
+.opt.box .key{border-radius:4px}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.sel .key{background:var(--accent);color:var(--accent-ink)}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.right .key{background:var(--good);color:var(--surface)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .key{background:var(--bad);color:var(--surface)}
+.opt:disabled{cursor:default;color:var(--ink)}
+.opt .tag,.tag{flex:none;font:600 11px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);align-self:center}
+.opt.right .tag{color:var(--good)} .opt.wrong .tag{color:var(--bad)}
+.optcode{flex:1;min-width:0;margin:0;font:13px/1.5 var(--f-mono);background:var(--code-bg);color:var(--code-fg);border-radius:6px;padding:8px 10px;overflow-x:auto;white-space:pre}
+.yn{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.yn-h,.yn-r{display:grid;grid-template-columns:minmax(0,1fr) 64px 64px;align-items:center}
+.yn-h{background:var(--sunk);font:600 11.5px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.yn-h span{padding:8px 12px}.yn-h span+span{text-align:center;padding:8px 0}
+.yn-r{border-top:1px solid var(--line)}
+.yn-s{padding:10px 12px;min-width:0;overflow-wrap:anywhere}
+.ynb{margin:6px;height:36px;border:1.5px solid var(--line);background:var(--surface);border-radius:8px;cursor:pointer;font-weight:600;font-size:13.5px}
+.ynb.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.ynb.right{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.ynb.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.ynb:disabled{cursor:default}
+textarea{width:100%;font:15px/1.5 var(--f-mono);background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;resize:vertical}
+textarea:focus{border-color:var(--accent);outline:none}
+.lbl{display:block;font:600 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+label.lbl code{text-transform:none}
+.typed-rev{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:520px){.typed-rev{grid-template-columns:minmax(0,1fr)}}
+.out{margin:0;font:14px/1.5 var(--f-mono);background:var(--sunk);border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.out.ok{border-color:var(--good)} .out.no{border-color:var(--bad)}
+.fb{margin-top:16px;border-radius:10px;padding:12px 14px;border:1px solid}
+.fb.ok{background:var(--good-soft);border-color:var(--good)}
+.fb.no{background:var(--bad-soft);border-color:var(--bad)}
+.fb strong{font-family:var(--f-display);font-size:18px}
+.fb.ok strong{color:var(--good)} .fb.no strong{color:var(--bad)}
+.fb p{margin:6px 0 0;max-width:72ch}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:18px}
+.keys{font-size:12.5px;color:var(--muted);margin-left:auto}
+@media (max-width:620px){.keys{display:none}}
+
+/* results */
+.score{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;margin-bottom:6px}
+.score b{font:700 56px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.score .pass{font-weight:600;color:var(--good)} .score .fail{font-weight:600;color:var(--bad)}
+.bars{display:grid;gap:7px;margin:16px 0 22px}
+.bar{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr) 54px;gap:10px;align-items:center;font-size:13.5px}
+.bar .track{height:10px;background:var(--sunk);border-radius:5px;overflow:hidden}
+.bar .fill{height:100%;border-radius:5px}
+.bar .n{font:500 12.5px var(--f-mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.bar .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:520px){.bar{grid-template-columns:minmax(0,1fr) 54px}.bar .track{grid-column:1/-1;grid-row:2}}
+.rv{border:1px solid var(--line);border-radius:10px;background:var(--surface);margin-bottom:8px}
+.rv summary{cursor:pointer;padding:11px 14px;display:flex;gap:10px;align-items:baseline;list-style:none}
+.rv summary::-webkit-details-marker{display:none}
+.rv summary .s{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rv summary .tag.bad{color:var(--bad)} .rv summary .tag.gs{color:var(--hot)}
+.rv[open] summary .s{white-space:normal}
+.rv-b{padding:0 14px 14px}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:10px 0}
+@media (max-width:520px){.cols{grid-template-columns:minmax(0,1fr)}}
+.cols > div{min-width:0}
+.ynline{margin-bottom:4px}
+.why{background:var(--sunk);border-radius:8px;padding:10px 12px;margin:0}
+
+/* cram sheet */
+.cram{max-width:76ch}
+.cram .jump{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
+.cram .jump a{font:500 13px var(--f-mono);color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:5px 10px;text-decoration:none;background:var(--surface)}
+.cram h2{font-size:26px;margin:34px 0 4px;padding-top:6px;border-top:2px solid var(--ink)}
+.cram h2 small{font:600 12px var(--f-mono);color:var(--hot);letter-spacing:.06em;display:block;margin-bottom:4px;text-transform:uppercase}
+.cram h3{font-size:18px;margin:22px 0 6px;color:var(--accent)}
+.cram h3 .obj{margin-right:6px;vertical-align:2px}
+.cram ul{padding-left:20px;margin:6px 0}
+.cram li{margin:4px 0}
+.cram p{margin:6px 0}
+.mini{background:var(--code-bg);color:var(--code-fg);font:13px/1.55 var(--f-mono);border-radius:8px;padding:10px 12px;overflow-x:auto;margin:8px 0;white-space:pre}
+.trap{background:var(--note-soft);border-left:3px solid var(--hot);border-radius:0 8px 8px 0;padding:10px 12px;margin:10px 0}
+.trap > b:first-child{font:600 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--hot);display:block;margin-bottom:4px}
+.tbl{overflow-x:auto;margin:8px 0}
+.tbl table{border-collapse:collapse;font-size:14px;min-width:100%}
+.tbl th,.tbl td{border-bottom:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.tbl th{font:600 11.5px var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.tbl td:first-child{font-family:var(--f-mono);font-weight:600;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Certiport IT Specialist · Java</div>
+      <h1>Java <span>Final Review</span></h1>
+    </div>
+    <div class="facts"><span>35–45 questions</span><span>50 minutes</span><span>700 / 1000 to pass</span></div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-practice" aria-selected="true" data-view="practice">Practice</button>
+    <button class="tab" role="tab" id="tab-cram" aria-selected="false" data-view="cram">Cram sheet</button>
+  </nav>
+
+  <section id="v-practice">
+    <div id="setup">
+      <div class="stats">
+        <div><b id="st-total">0</b><small>questions in bank</small></div>
+        <div><b id="st-seen">0</b><small>you've answered</small></div>
+        <div><b id="st-acc">–</b><small>your accuracy</small></div>
+        <div><b id="st-miss">0</b><small>missed or guessed</small></div>
+      </div>
+
+      <div class="mode">
+        <div class="panel">
+          <h2>Drill</h2>
+          <p>Instant feedback and an explanation after every question. Answer choices are shuffled every time, so you have to read them.</p>
+          <div id="objs"></div>
+          <div class="row"><button class="link" id="all-on" type="button">Select all topics</button><button class="link" id="all-off" type="button">Clear</button></div>
+          <div class="opts-row">
+            <div><span class="optlbl">How many</span>
+              <div class="seg">
+                <label><input type="radio" name="count" value="15" checked><span>15</span></label>
+                <label><input type="radio" name="count" value="30"><span>30</span></label>
+                <label><input type="radio" name="count" value="60"><span>60</span></label>
+                <label><input type="radio" name="count" value="all"><span>All</span></label>
+              </div></div>
+            <div><span class="optlbl">Order</span>
+              <div class="seg">
+                <label><input type="radio" name="order" value="weak" checked><span>Weak spots first</span></label>
+                <label><input type="radio" name="order" value="random"><span>Random</span></label>
+              </div></div>
+            <div><span class="optlbl">Question types</span>
+              <label class="check"><input type="checkbox" id="inc-type" checked> Include "type the output"</label></div>
+          </div>
+          <div class="row">
+            <button class="btn primary" id="go-drill" type="button">Start drill</button>
+            <button class="btn" id="redo" type="button" disabled>Redo misses</button>
+            <span class="msg" id="setup-msg"></span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Mock exam</h2>
+          <p>40 questions drawn across every objective, a 50-minute clock, and no feedback until you submit, like the real thing. Aim for 80% or better here to walk in with margin.</p>
+          <button class="btn primary" id="go-mock" type="button">Start mock exam</button>
+        </div>
+
+        <div class="panel">
+          <h2>Beat autopilot</h2>
+          <p>You've seen the GMetrix set enough that your hand moves before your brain does. On every question today:</p>
+          <ol class="routine">
+            <li><b>Read the last sentence first.</b> Is it asking for output, a compile error, a runtime error, or which code to insert?</li>
+            <li><b>Scan for traps</b> before tracing: <code>;</code> after <code>if</code>/<code>for</code>, <code>=</code> vs <code>==</code>, int division, missing <code>break</code>, a string method result that is never assigned, <code>&lt;</code> vs <code>&lt;=</code>, a variable used outside its block.</li>
+            <li><b>Trace with real values.</b> Write the variable values down on your board, line by line.</li>
+            <li><b>Predict, then look.</b> Decide your answer before reading the choices, then find it.</li>
+          </ol>
+        </div>
+        <div class="row"><button class="link" id="reset" type="button">Reset my progress</button></div>
+      </div>
+    </div>
+    <div id="session" hidden></div>
+  </section>
+
+  <section id="v-cram" class="cram" hidden>
+    <div class="jump">
+      <a href="#c1">1 Fundamentals</a><a href="#c2">2 Data types</a><a href="#c3">3 Flow control</a><a href="#c4">4 OOP</a><a href="#c5">5 Debugging</a><a href="#c6">Exam day</a>
+    </div>
+
+    <div class="trap"><b>Top traps on this exam</b>
+      <code>7/2</code> is <code>3</code> · <code>s.toUpperCase();</code> alone changes nothing · <code>==</code> on Strings compares references · <code>switch</code> without <code>break</code> falls through · <code>if (x &gt; 5);</code> has an empty body · a braceless <code>if</code> owns one statement only · array <code>.length</code>, String <code>.length()</code>, ArrayList <code>.size()</code> · <code>list.remove(1)</code> on <code>ArrayList&lt;Integer&gt;</code> removes index 1 · local variables have no default · <code>finally</code> always runs · catch subclasses before superclasses.
+    </div>
+
+    <h2 id="c1"><small>Domain 1</small>Java fundamentals</h2>
+    <h3><span class="obj">1.1</span>main() and running a program</h3>
+<pre class="mini hl">public static void main(String[] args)   // the one entry point the JVM looks for</pre>
+    <ul>
+      <li><b>public</b>: the JVM calls it from outside. <b>static</b>: no object exists yet when the program starts. <b>void</b>: returns nothing. <b>String[] args</b>: command-line arguments.</li>
+      <li>Also legal: <code>String args[]</code>, <code>String... args</code>, <code>static public</code>, any parameter name (<code>String[] x</code>). Leaving out <code>static</code> compiles, but the launcher refuses to run it.</li>
+      <li><code>javac Grades.java</code> compiles to bytecode <code>Grades.class</code>. <code>java Grades</code> runs it (no extension).</li>
+      <li><code>java Grades 90 85</code> gives <code>args = {"90", "85"}</code>, <code>args.length == 2</code>. They're <b>Strings</b>: <code>args[0] + args[1]</code> is <code>"9085"</code>. Use <code>Integer.parseInt(args[0])</code> for math.</li>
+      <li>No arguments: <code>args.length == 0</code> (not null), and <code>args[0]</code> throws <code>ArrayIndexOutOfBoundsException</code>.</li>
+    </ul>
+    <h3><span class="obj">1.2</span>Console input and output, comments</h3>
+    <ul>
+      <li><code>print</code> = no newline. <code>println</code> = newline after. <code>printf</code> / <code>String.format</code> = formatted, no newline unless <code>%n</code> or <code>\n</code>.</li>
+      <li><code>%d</code> int/long · <code>%f</code> double (6 decimals by default) · <code>%.2f</code> 2 decimals, rounded · <code>%s</code> String · <code>%c</code> char · <code>%b</code> boolean · <code>%n</code> newline · <code>%,d</code> 1,234 · <code>%5d</code> right-aligned in 5 · <code>%-5s</code> left-aligned · <code>%05d</code> zero-padded.</li>
+      <li><code>printf("%d", 3.5)</code> compiles but throws <code>IllegalFormatConversionException</code> at runtime.</li>
+      <li>Escapes: <code>\n</code> newline · <code>\t</code> tab · <code>\"</code> quote · <code>\'</code> apostrophe · <code>\\</code> backslash.</li>
+    </ul>
+<pre class="mini hl">import java.util.Scanner;                 // java.lang (String, Math, System, Integer) is automatic
+Scanner in = new Scanner(System.in);
+int age = in.nextInt();      // also nextDouble(), nextBoolean(), next() = one word
+in.nextLine();               // eat the leftover newline!
+String name = in.nextLine(); // whole line, spaces included
+in.close();</pre>
+    <div class="trap"><b>Trap</b><code>nextInt()</code> then <code>nextLine()</code> returns <code>""</code>: the Enter key's newline is still in the buffer. Typing <code>abc</code> for <code>nextInt()</code> throws <code>InputMismatchException</code>.</div>
+    <ul>
+      <li>Comments: <code>// line</code>, <code>/* block */</code>, <code>/** Javadoc */</code> with tags <code>@param</code>, <code>@return</code>, <code>@throws</code>, <code>@author</code>. The <code>javadoc</code> tool turns Javadoc into HTML docs. The compiler ignores all comments.</li>
+    </ul>
+    <h3><span class="obj">1.3</span>Variable scope</h3>
+    <ul>
+      <li>A variable exists only inside the <code>{ }</code> block where it's declared, from the declaration down.</li>
+      <li>A <code>for (int i = 0; ...)</code> counter is gone after the loop. Using <code>i</code> afterward is a compile error.</li>
+      <li><b>Local</b> variables get no default value: reading one before assigning it is a compile error. <b>Fields</b> (instance/static) default to 0, 0.0, false, '\u0000' or null.</li>
+      <li>You can't redeclare a local inside a nested block where it's still in scope (compile error). A local or parameter <b>can</b> shadow a field; use <code>this.name</code> to reach the field.</li>
+      <li>Static field: one copy for the class. Instance field: one per object. Local: one per method call.</li>
+    </ul>
+
+    <h2 id="c2"><small>Domain 2</small>Data types, variables and expressions</h2>
+    <h3><span class="obj">2.1</span>Primitive types</h3>
+    <div class="tbl"><table>
+      <tr><th>Type</th><th>Size</th><th>Range / notes</th><th>Literal</th></tr>
+      <tr><td>byte</td><td>8-bit</td><td>-128 to 127</td><td><code>byte b = 10;</code></td></tr>
+      <tr><td>short</td><td>16-bit</td><td>-32,768 to 32,767</td><td><code>short s = 500;</code></td></tr>
+      <tr><td>int</td><td>32-bit</td><td>about ±2.1 billion (default for whole numbers)</td><td><code>42</code></td></tr>
+      <tr><td>long</td><td>64-bit</td><td>huge; needs <code>L</code> past int range</td><td><code>3000000000L</code></td></tr>
+      <tr><td>float</td><td>32-bit</td><td>~7 significant digits; needs <code>f</code></td><td><code>2.5f</code></td></tr>
+      <tr><td>double</td><td>64-bit</td><td>~15 digits (default for decimals)</td><td><code>2.5</code></td></tr>
+      <tr><td>char</td><td>16-bit</td><td>one Unicode char, 0 to 65,535, single quotes</td><td><code>'A'</code></td></tr>
+      <tr><td>boolean</td><td>n/a</td><td><code>true</code>/<code>false</code> only, never 0/1</td><td><code>true</code></td></tr>
+    </table></div>
+    <ul>
+      <li><b>Widening is automatic</b>: byte → short → int → long → float → double, and char → int. <b>Narrowing needs a cast</b>: <code>int n = (int) 9.99;</code> gives <code>9</code> (truncates toward zero; <code>(int) -9.99</code> is <code>-9</code>).</li>
+      <li>Compile errors: <code>int n = 9.99;</code> · <code>float f = 1.5;</code> (1.5 is a double) · <code>long big = 3000000000;</code> · <code>int x = true;</code> · <code>short s = 1; s = s + 1;</code> (s + 1 is int). <code>s += 1;</code> is fine.</li>
+      <li>Precision loss: double → int drops the fraction; large int/long → float loses digits.</li>
+      <li>Overflow wraps silently: <code>Integer.MAX_VALUE + 1</code> is <code>-2147483648</code>. <code>(byte) 200</code> is <code>-56</code>.</li>
+      <li>char is a number: <code>'A'</code> = 65, <code>'a'</code> = 97, <code>'0'</code> = 48. <code>'A' + 1</code> is int <code>66</code>; <code>(char)('A' + 1)</code> is <code>'B'</code>; <code>char c = 'A'; c++;</code> gives <code>'B'</code>.</li>
+      <li>Names: start with a letter, <code>_</code> or <code>$</code>; no leading digit, no spaces, no keywords; case-sensitive. Constants: <code>final double TAX_RATE = 0.07;</code></li>
+    </ul>
+    <h3><span class="obj">2.2</span>Strings</h3>
+<pre class="mini hl">String s = "Java Exam";   // indexes: J=0 a=1 v=2 a=3 ' '=4 E=5 x=6 a=7 m=8
+s.length()          // 9
+s.charAt(5)         // 'E'          charAt(9) -> StringIndexOutOfBoundsException
+s.substring(5)      // "Exam"       from 5 to the end
+s.substring(0, 4)   // "Java"       end index is EXCLUDED; length = end - begin
+s.indexOf("a")      // 1            first match; -1 if not found
+s.lastIndexOf('a')  // 7
+s.toUpperCase()     // "JAVA EXAM"  returns a NEW string; s is unchanged
+s.replace('a', 'o') // "Jovo Exom"  replaces every match
+s.contains("Ex")    // true         also startsWith, endsWith, isEmpty, trim, split
+"b".compareTo("a")  // positive     negative = comes first, 0 = equal</pre>
+    <ul>
+      <li><b>Immutable.</b> <code>s.trim();</code> on its own line does nothing. You need <code>s = s.trim();</code>.</li>
+      <li>Compare text with <code>s.equals(t)</code> or <code>s.equalsIgnoreCase(t)</code>. <code>==</code> compares references: <code>"hi" == "hi"</code> is true (pooled literals), <code>new String("hi") == "hi"</code> is false.</li>
+      <li>Concatenation goes left to right: <code>1 + 2 + "3"</code> is <code>"33"</code>; <code>"1" + 2 + 3</code> is <code>"123"</code>; <code>"1" + (2 + 3)</code> is <code>"15"</code>; <code>'A' + 1 + ""</code> is <code>"66"</code>; <code>"" + 'A' + 1</code> is <code>"A1"</code>.</li>
+      <li><code>null</code>: <code>"x" + null</code> is <code>"xnull"</code>, but calling a method on a null String throws <code>NullPointerException</code>. <code>""</code> is an empty string, not null.</li>
+      <li><code>StringBuilder</code> is mutable: <code>append</code>, <code>insert(i, x)</code>, <code>reverse()</code>, <code>deleteCharAt</code>, <code>toString()</code> change the same object.</li>
+    </ul>
+    <h3><span class="obj">2.3</span>Arrays and ArrayList</h3>
+<pre class="mini hl">int[] a = new int[5];          // five 0s. Defaults: 0, 0.0, false, '\u0000', null
+int[] b = {4, 8, 15};          // b.length == 3 (a field: no parentheses)
+int c[] = new int[]{1, 2};     // also legal.  new int[2]{1,2} is a compile error
+b[b.length]                    // ArrayIndexOutOfBoundsException (last index is length - 1)
+int[][] g = new int[3][4];     // g.length == 3 rows, g[0].length == 4 columns, g[row][col]
+for (int v : b) { v = 0; }     // for-each gets a copy: the array is NOT changed
+System.out.println(b);         // prints something like [I@6d06d69c. Use Arrays.toString(b)</pre>
+<pre class="mini hl">import java.util.ArrayList;
+ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;();  // ArrayList&lt;int&gt; is a compile error: use Integer
+list.add("a");        // [a]
+list.add("c");        // [a, c]
+list.add(1, "b");     // [a, b, c]   inserts and shifts right
+list.set(0, "z");     // [z, b, c]   replaces, returns old value
+list.remove(0);       // [b, c]      by index, returns removed element
+list.remove("c");     // [b]         by value, returns true/false
+list.get(0); list.size(); list.contains("b"); list.indexOf("b"); list.isEmpty(); list.clear();</pre>
+    <div class="trap"><b>Trap</b>On <code>ArrayList&lt;Integer&gt;</code>, <code>nums.remove(1)</code> removes <b>index</b> 1. To remove the value 1 use <code>nums.remove(Integer.valueOf(1))</code>. Removing while looping forward by index skips the next element; removing inside a for-each throws <code>ConcurrentModificationException</code>. A bad <code>get</code> index throws <code>IndexOutOfBoundsException</code>.</div>
+    <h3><span class="obj">2.4</span>Parsing, casting and conversion</h3>
+    <ul>
+      <li>String to number: <code>Integer.parseInt("42")</code> → int, <code>Double.parseDouble("4.5")</code> → double, <code>Boolean.parseBoolean("true")</code>, <code>Integer.valueOf("42")</code> → Integer object.</li>
+      <li><code>Integer.parseInt("4.5")</code>, <code>("12a")</code>, <code>(" 7")</code>, <code>("")</code> all throw <code>NumberFormatException</code> (runtime).</li>
+      <li>Number to String: <code>String.valueOf(42)</code>, <code>Integer.toString(42)</code>, <code>"" + 42</code>.</li>
+      <li>Wrappers: <code>Byte Short Integer Long Float Double Character Boolean</code>. Autoboxing: <code>Integer x = 5;</code> Unboxing: <code>int y = x;</code> <code>Integer.MAX_VALUE</code>, <code>Integer.MIN_VALUE</code>.</li>
+      <li>Rounding: <code>(int) 2.7</code> → 2 (truncate). <code>Math.round(2.5)</code> → 3, <code>Math.round(-2.5)</code> → -2, <code>Math.round(2.49)</code> → 2. <code>Math.round(double)</code> returns a <b>long</b>.</li>
+      <li><code>(double) 7 / 2</code> → 3.5 (cast happens first). <code>(double)(7 / 2)</code> → 3.0 (int division happens first).</li>
+    </ul>
+    <h3><span class="obj">2.5</span>Arithmetic and operators</h3>
+    <ul>
+      <li>Precedence, high to low: <code>()</code> → <code>x++ x--</code> → <code>++x --x ! -x (cast)</code> → <code>* / %</code> → <code>+ -</code> → <code>&lt; &gt; &lt;= &gt;=</code> → <code>== !=</code> → <code>&amp;&amp;</code> → <code>||</code> → <code>?:</code> → <code>= += -=</code>. Same level goes left to right.</li>
+      <li>int ÷ int = int: <code>7 / 2</code> → 3, <code>-7 / 2</code> → -3, <code>1 / 3 * 3</code> → 0. Any double makes it double: <code>7 / 2.0</code> → 3.5.</li>
+      <li><code>%</code> remainder: <code>17 % 5</code> → 2, <code>3 % 8</code> → 3, <code>-7 % 3</code> → -1 (sign follows the left side), <code>5.5 % 2</code> → 1.5. Even test: <code>n % 2 == 0</code>.</li>
+      <li><code>x++</code> uses the old value, then adds. <code>++x</code> adds first. <code>int x = 5; int y = x++ + ++x;</code> → y = 5 + 7 = 12, x = 7.</li>
+      <li>Compound ops cast for you: <code>int n = 10; n += 2.9;</code> compiles (n = 12), but <code>n = n + 2.9;</code> doesn't. <code>n *= 2 + 3</code> means <code>n = n * (2 + 3)</code>.</li>
+      <li>Math: <code>Math.pow(2, 3)</code> → 8.0 (<b>double</b>, so <code>int p = Math.pow(2,3);</code> won't compile) · <code>Math.sqrt(25)</code> → 5.0 · <code>Math.abs(-4)</code> → 4 · <code>Math.max/min</code> · <code>Math.ceil(2.1)</code> → 3.0 · <code>Math.floor(-2.1)</code> → -3.0 · <code>Math.random()</code> → 0.0 up to but not including 1.0.</li>
+      <li>Random int from 1 to 6: <code>(int)(Math.random() * 6) + 1</code>. From 5 to 15: <code>(int)(Math.random() * 11) + 5</code> (count = max − min + 1).</li>
+      <li><code>5 / 0</code> and <code>5 % 0</code> throw <code>ArithmeticException</code>. <code>5.0 / 0</code> is <code>Infinity</code>; <code>0.0 / 0</code> is <code>NaN</code>. No exception for doubles.</li>
+    </ul>
+
+    <h2 id="c3"><small>Domain 3</small>Flow control</h2>
+    <h3><span class="obj">3.1</span>Branching</h3>
+    <ul>
+      <li>In an <code>if / else if / else</code> chain only the <b>first</b> true branch runs. Order matters: <code>if (score &gt;= 60)</code> before <code>if (score &gt;= 90)</code> means 95 gets the first branch.</li>
+      <li>No braces: the <code>if</code> controls exactly one statement. Indentation means nothing to Java. An <code>else</code> pairs with the nearest unmatched <code>if</code>.</li>
+      <li><code>if (x &gt; 5);</code> ends the if with an empty statement, so the block below always runs.</li>
+      <li><code>if (x = 5)</code> with an int is a compile error. <code>if (done = true)</code> with a boolean compiles, assigns, and is always true.</li>
+      <li><code>&amp;&amp;</code> and <code>||</code> short-circuit: <code>s != null &amp;&amp; s.length() &gt; 0</code> never calls length() on null. <code>&amp;</code> and <code>|</code> always evaluate both sides. <code>!</code> binds tightest, then <code>&amp;&amp;</code>, then <code>||</code>: <code>a || b &amp;&amp; c</code> means <code>a || (b &amp;&amp; c)</code>.</li>
+      <li>Ternary: <code>String r = (n % 2 == 0) ? "even" : "odd";</code></li>
+    </ul>
+<pre class="mini hl">switch (day) {              // int, char, byte, short, String, enum (and their wrappers)
+    case 1:                 // NOT long, float, double, boolean
+    case 7:  System.out.print("weekend "); break;
+    case 2:  System.out.print("mon ");     // no break: falls through into case 3
+    case 3:  System.out.print("tue ");     break;
+    default: System.out.print("other ");   // runs when no case matches
+}                           // day = 2 prints "mon tue "</pre>
+    <ul>
+      <li>Case labels must be constants and unique. String cases are case-sensitive. <code>default</code> can go anywhere, and execution falls through it too if there's no break.</li>
+    </ul>
+    <h3><span class="obj">3.2</span>Loops</h3>
+    <ul>
+      <li><code>while (cond)</code> checks first, so it may run 0 times. <code>do { } while (cond);</code> always runs at least once (note the semicolon).</li>
+      <li>Count iterations: <code>for (int i = a; i &lt; b; i++)</code> runs <b>b − a</b> times; with <code>&lt;=</code> it's <b>b − a + 1</b>. <code>for (int i = 0; i &lt; 10; i += 3)</code> runs for 0, 3, 6, 9: four times. <code>for (int i = 1; i &lt; 50; i *= 2)</code>: 1, 2, 4, 8, 16, 32 (six times).</li>
+      <li><code>break</code> leaves the innermost loop or switch. <code>continue</code> jumps to the next iteration (in a <code>for</code>, the update still runs; in a <code>while</code>, a <code>continue</code> before <code>i++</code> makes an infinite loop).</li>
+      <li>Nested loops: total inner runs = outer count × inner count (when independent). With <code>j &lt; i</code> it's a triangle: 0 + 1 + 2 + ...</li>
+      <li>A for-each loop has no index and can't replace elements. <code>for (String s : list)</code> works on arrays and ArrayLists.</li>
+      <li>Infinite: <code>for (;;)</code>, <code>while (true)</code> without a break, or a counter that moves the wrong way.</li>
+    </ul>
+
+    <h2 id="c4"><small>Domain 4</small>Object-oriented programming</h2>
+    <h3><span class="obj">4.1</span>Classes and constructors</h3>
+<pre class="mini hl">public class Account {                    // must live in Account.java (one public class per file)
+    private String owner;                 // fields = state
+    private double balance;
+    private static int count = 0;         // shared by ALL Account objects
+
+    public Account(String owner) {        // constructor: class name, NO return type
+        this(owner, 0.0);                 // this(...) must be the first statement
+    }
+    public Account(String owner, double balance) {   // overloaded constructor
+        this.owner = owner;               // this.owner = field, owner = parameter
+        this.balance = balance;
+        count++;
+    }
+    public double getBalance() { return balance; }   // getter
+    public void setBalance(double b) { balance = b; } // setter
+}</pre>
+    <ul>
+      <li><code>public void Account()</code> is a <b>method</b> named Account, not a constructor.</li>
+      <li>Write no constructor and Java gives you a free no-arg one. Write <b>any</b> constructor and that free one disappears: <code>new Account()</code> then won't compile.</li>
+      <li><code>owner = owner;</code> (without <code>this.</code>) assigns the parameter to itself. The field stays null. This is a logic error, not a compile error.</li>
+      <li>Inheritance: <code>class Savings extends Account</code>. One parent only. Constructors are not inherited. Private members exist but aren't accessible in the child.</li>
+      <li><code>super(...)</code> must be the first line of a child constructor. If you leave it out, Java inserts <code>super()</code>, which fails to compile when the parent has no no-arg constructor.</li>
+      <li>Overriding: same name and same parameters in the child (use <code>@Override</code>). <code>Account a = new Savings("x");</code> then <code>a.method()</code> runs <b>Savings'</b> version. You can't make an overriding method less visible. <code>super.method()</code> calls the parent's version.</li>
+    </ul>
+    <h3><span class="obj">4.2</span>Fields and access modifiers</h3>
+    <div class="tbl"><table>
+      <tr><th>Modifier</th><th>Same class</th><th>Same package</th><th>Subclass</th><th>Everywhere</th></tr>
+      <tr><td>private</td><td>yes</td><td>no</td><td>no</td><td>no</td></tr>
+      <tr><td>(none) package</td><td>yes</td><td>yes</td><td>same pkg only</td><td>no</td></tr>
+      <tr><td>protected</td><td>yes</td><td>yes</td><td>yes</td><td>no</td></tr>
+      <tr><td>public</td><td>yes</td><td>yes</td><td>yes</td><td>yes</td></tr>
+    </table></div>
+    <ul>
+      <li>Encapsulation: <code>private</code> fields plus public getters and setters (<code>getName()</code>, <code>setName(..)</code>, <code>isActive()</code> for booleans). Setters can validate.</li>
+      <li><code>static</code> field: one copy shared by every object; access it as <code>ClassName.field</code>. Classic use: counting objects created.</li>
+      <li><code>final</code> variable: assign once, then reassigning is a compile error. <code>static final</code> = class constant, named <code>UPPER_CASE</code>. A <code>final</code> method can't be overridden; a <code>final</code> class can't be extended.</li>
+    </ul>
+    <h3><span class="obj">4.3</span>Methods</h3>
+    <ul>
+      <li>Shape: <code>modifiers returnType name(parameters) { }</code>. A <code>void</code> method can't return a value (a bare <code>return;</code> is fine). A non-void method must return a value on every path, or it won't compile.</li>
+      <li>Overloading: same name, different parameter list (number, type or order). A different return type alone is not overloading (compile error). Java picks the closest match: <code>f(5)</code> prefers <code>f(int)</code> over <code>f(double)</code>; if there's only <code>f(double)</code>, the int widens.</li>
+      <li>A <code>static</code> method has no <code>this</code>. It can't touch instance fields or call instance methods directly (compile error: "non-static ... cannot be referenced from a static context"). It must create an object first.</li>
+      <li><b>Java is pass-by-value.</b> A primitive argument is copied: the caller's variable never changes. An object argument copies the reference: changing the object's fields is visible to the caller, but pointing the parameter at a new object is not.</li>
+    </ul>
+    <h3><span class="obj">4.4</span>Objects and references</h3>
+    <ul>
+      <li><code>Dog d = new Dog();</code> → <code>new</code> creates the object, runs the constructor, returns a reference. <code>Dog e = d;</code> copies the reference: both names point to one object.</li>
+      <li><code>==</code> on objects: same object? <code>.equals()</code>: same content (when the class overrides it, like String).</li>
+      <li><code>null</code> = points at nothing. Calling a method on it throws <code>NullPointerException</code>. Object fields default to null.</li>
+      <li>Garbage collection: an object becomes eligible once nothing references it (variable set to <code>null</code>, reassigned, or out of scope). The JVM decides when. <code>System.gc()</code> only suggests it; you can't force it.</li>
+      <li><code>System.out.println(obj)</code> calls <code>obj.toString()</code>. Without an override it prints something like <code>Dog@1b6d3586</code>.</li>
+    </ul>
+
+    <h2 id="c5"><small>Domain 5</small>Compilation and debugging</h2>
+    <h3><span class="obj">5.1</span>Three kinds of errors</h3>
+    <div class="tbl"><table>
+      <tr><th>Kind</th><th>When</th><th>Examples</th></tr>
+      <tr><td>Syntax / compile</td><td><code>javac</code> refuses; no .class file</td><td>missing <code>;</code> or <code>}</code>, misspelled keyword, undeclared or uninitialized variable, <code>int x = "5";</code>, missing return, calling a method that doesn't exist, <code>string</code> instead of <code>String</code></td></tr>
+      <tr><td>Runtime</td><td>compiles, crashes while <code>java</code> runs it</td><td><code>ArithmeticException</code> (int ÷ 0), <code>ArrayIndexOutOfBoundsException</code>, <code>StringIndexOutOfBoundsException</code>, <code>IndexOutOfBoundsException</code>, <code>NullPointerException</code>, <code>NumberFormatException</code>, <code>InputMismatchException</code>, <code>ClassCastException</code></td></tr>
+      <tr><td>Logic</td><td>compiles and runs, wrong answer</td><td>off-by-one, wrong operator, int division, <code>=</code> vs <code>==</code> on booleans, wrong order of conditions, <code>owner = owner</code></td></tr>
+    </table></div>
+<pre class="mini">Exception in thread "main" java.lang.ArithmeticException: / by zero
+    at Calc.divide(Calc.java:12)      &lt;- where it actually happened (top frame)
+    at Calc.main(Calc.java:5)         &lt;- the call that led there</pre>
+    <ul><li>Print-statement debugging: add <code>System.out.println("i=" + i + " total=" + total);</code> inside the loop to watch values change.</li></ul>
+    <h3><span class="obj">5.2</span>Exception handling</h3>
+<pre class="mini hl">try {
+    int r = 10 / d;                 // if this throws, the rest of try is skipped
+    System.out.println("done");
+} catch (ArithmeticException e) {   // most specific first
+    System.out.println(e.getMessage());   // "/ by zero"
+} catch (Exception e) {             // broadest last; reversing the order = compile error
+    System.out.println(e);          // "java.lang.ArithmeticException: / by zero"
+} finally {
+    System.out.println("always");   // runs whether or not anything was thrown, even after return
+}
+System.out.println("after");        // runs if the exception was caught</pre>
+    <ul>
+      <li>Hierarchy: <code>Throwable</code> → <code>Error</code> (OutOfMemoryError, StackOverflowError: don't catch) and <code>Exception</code> → <code>RuntimeException</code> (unchecked) plus the checked ones.</li>
+      <li><b>Checked</b> (<code>IOException</code>, <code>FileNotFoundException</code>, <code>Exception</code> itself): you must catch it or declare <code>throws IOException</code> in the method header, or it won't compile. <b>Unchecked</b> (RuntimeException and its subclasses): optional.</li>
+      <li><code>throw new IllegalArgumentException("Age can't be negative");</code> throws one. <code>throws</code> (with an s) goes in the method signature.</li>
+      <li>Multi-catch: <code>catch (NumberFormatException | ArithmeticException e)</code>. A <code>try</code> needs at least one <code>catch</code> or a <code>finally</code>.</li>
+      <li>If no catch matches, <code>finally</code> still runs, then the exception keeps going up and the program crashes with a stack trace.</li>
+      <li><code>e.getMessage()</code> = message only. <code>e.toString()</code> / <code>println(e)</code> = class name + message. <code>e.printStackTrace()</code> = full trace.</li>
+    </ul>
+
+    <h2 id="c6"><small>Exam day</small>How the test works</h2>
+    <ul>
+      <li>About 35 to 45 items in 50 minutes; 700 out of 1000 (scaled) passes. Budget a bit over a minute per question and mark slow ones for review.</li>
+      <li>Formats: multiple choice, "choose two/three", <b>Yes/No hot-area grids</b> (each statement scored), <b>drop-down code completion</b> (pick the right code for each blank), <b>drag-and-drop</b> (match code to slots or put lines in order).</li>
+      <li>Code is shown with line numbers. "Which line causes the compile error?" means you check each line for type mismatches, scope and missing returns, not logic.</li>
+      <li>On "complete the code" items, every blank has to compile <b>and</b> produce the stated output. Check the types: <code>int</code> vs <code>double</code> vs <code>String</code>, <code>.length</code> vs <code>.length()</code> vs <code>.size()</code>.</li>
+      <li>Wrong answers are designed to match a common mistake. If you find your answer instantly, re-trace it once before moving on.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+window.QB = (window.QB || []).concat([
+  // ---------- 1.1 main() ----------
+  {
+    id: "a01", obj: "1.1", type: "mc",
+    q: "You are creating a Java console application. Which method declaration will the `java` command accept as the program's entry point?",
+    options: [
+      "`public static void main(String[] args)`",
+      "`public void main(String[] args)`",
+      "`public static int main(String[] args)`",
+      "`public static void Main(String[] args)`"
+    ],
+    answer: 0,
+    why: "The JVM looks for `public static void main(String[] args)`. Without `static` the launcher errors out (no object exists yet), a non-void return type is rejected, and `Main` is a different name because Java is case-sensitive."
+  },
+  {
+    id: "a02", obj: "1.1", type: "multi",
+    q: "Which two declarations are also valid entry points for a Java application? (Choose two.)",
+    options: [
+      "`public static void main(String args[])`",
+      "`public static void main(String... args)`",
+      "`public static void main(String args)`",
+      "`public static void main(string[] args)`",
+      "`private static void main(String[] args)`"
+    ],
+    answer: [0, 1],
+    why: "`String args[]` is just the C-style array syntax and `String...` is varargs, which is also a `String[]`. A single `String` isn't an array, `string` (lowercase) is not a type, and `private` hides main from the JVM."
+  },
+  {
+    id: "a03", obj: "1.1", type: "type",
+    q: "The program is run with the command `java Calc 5 3`. What is the output?",
+    code: String.raw`public class Calc {
+    public static void main(String[] args) {
+        System.out.println(args.length);
+        System.out.println(args[0] + args[1]);
+        System.out.println(Integer.parseInt(args[0]) + Integer.parseInt(args[1]));
+    }
+}`,
+    answer: "2\n53\n8",
+    why: "Command-line arguments are always Strings, so `args[0] + args[1]` concatenates to `53`. Only after `Integer.parseInt` do you get numeric addition (`8`). The class name `Calc` is NOT in `args`, so the length is 2."
+  },
+  {
+    id: "a04", obj: "1.1", type: "mc",
+    q: "A program contains `System.out.println(args[2]);` in its `main` method. You run it with `java Report sales 2026`. What happens?",
+    options: [
+      "An `ArrayIndexOutOfBoundsException` is thrown at runtime",
+      "`null` is printed",
+      "An empty line is printed",
+      "The program fails to compile"
+    ],
+    answer: 0,
+    why: "Two arguments means valid indexes are 0 and 1, so `args[2]` throws `ArrayIndexOutOfBoundsException`. The compiler can't know how many arguments will be passed, so it compiles fine."
+  },
+  {
+    id: "a05", obj: "1.1", type: "yn",
+    q: "You have a source file named `Payroll.java`. For each statement, select Yes if true, No if false.",
+    statements: [
+      "`javac Payroll.java` creates a bytecode file named `Payroll.class`",
+      "To run the program you type `java Payroll.class`",
+      "`main` is `static` so the JVM can call it without first creating a `Payroll` object"
+    ],
+    answer: [true, false, true],
+    why: "`javac` compiles `.java` into `.class` bytecode. You run it with the class name only: `java Payroll` (no extension). `static` lets the JVM call main with no instance."
+  },
+  {
+    id: "a06", obj: "1.1", type: "type",
+    q: "The program is run with: `java Greet \"Ada Lovelace\" 7`. What is the output?",
+    code: String.raw`public class Greet {
+    public static void main(String[] args) {
+        System.out.println(args.length + " " + args[0]);
+    }
+}`,
+    answer: "2 Ada Lovelace",
+    why: "Quotes group words into one argument, so `args` is `{\"Ada Lovelace\", \"7\"}` and its length is 2, not 3."
+  },
+
+  // ---------- 1.2 I/O ----------
+  {
+    id: "a07", obj: "1.2", type: "type",
+    q: "What is the output?",
+    code: String.raw`System.out.print("A");
+System.out.println("B");
+System.out.print("C");
+System.out.print("D\n");
+System.out.print("E");`,
+    answer: "AB\nCD\nE",
+    why: "`print` leaves the cursor on the same line; `println` adds a newline after its text. `\\n` inside a string also ends the line, so `E` starts on line 3."
+  },
+  {
+    id: "a08", obj: "1.2", type: "mc",
+    q: "The variable `double price = 7.5;` holds an item's price. You need to display it exactly as `$7.50`. Which statement should you use?",
+    options: [
+      "`System.out.printf(\"$%.2f\", price);`",
+      "`System.out.printf(\"$%2f\", price);`",
+      "`System.out.printf(\"$%d\", price);`",
+      "`System.out.printf(\"$%.2d\", price);`"
+    ],
+    answer: 0,
+    why: "`%.2f` means 2 digits after the decimal point. `%2f` sets a minimum WIDTH of 2 and keeps the default 6 decimals (`$7.500000`). `%d` is for integers and throws `IllegalFormatConversionException` with a double."
+  },
+  {
+    id: "a09", obj: "1.2", type: "type",
+    q: "What is the output?",
+    code: String.raw`int n = 1234;
+System.out.printf("%05d|%,d%n", n, n * 1000);
+System.out.println(String.format("%.1f", 2.75));`,
+    answer: "01234|1,234,000\n2.8",
+    why: "`%05d` pads with zeros to width 5, `%,d` adds grouping commas, `%n` is a newline. `%.1f` rounds 2.75 half-up to `2.8`."
+  },
+  {
+    id: "a10", obj: "1.2", type: "type",
+    q: "What is the output?",
+    code: String.raw`System.out.println("C:\\temp\\new");
+System.out.println("She said \"go\"");`,
+    answer: "C:\\temp\\new\nShe said \"go\"",
+    why: "`\\\\` prints one backslash and `\\\"` prints a double quote. Because each backslash is escaped, `\\n` in `new` is NOT a newline here."
+  },
+  {
+    id: "a11", obj: "1.2", type: "mc",
+    q: "The user types `17` and presses Enter when prompted for age. What happens?",
+    code: String.raw`Scanner in = new Scanner(System.in);
+System.out.print("Age: ");
+int age = in.nextInt();
+System.out.print("Name: ");
+String name = in.nextLine();
+System.out.println(name + " is " + age);`,
+    options: [
+      "The program does not wait for a name; it prints ` is 17` because `name` is an empty string",
+      "The program waits for the user to type a name, then prints it",
+      "An `InputMismatchException` is thrown",
+      "The code does not compile because `nextLine` cannot follow `nextInt`"
+    ],
+    answer: 0,
+    why: "`nextInt()` reads `17` but leaves the Enter (newline) in the buffer. `nextLine()` immediately consumes that leftover newline and returns `\"\"`. Fix: call an extra `in.nextLine();` after `nextInt()`."
+  },
+  {
+    id: "a12", obj: "1.2", type: "mc",
+    q: "You need to read keyboard input with the `Scanner` class. Which import statement is required?",
+    options: [
+      "`import java.util.Scanner;`",
+      "`import java.io.Scanner;`",
+      "`import java.lang.Scanner;`",
+      "`import java.input.Scanner;`"
+    ],
+    answer: 0,
+    why: "`Scanner` lives in `java.util`. `java.lang` is imported automatically, but Scanner is not in it. `java.io` has file/stream classes, not Scanner."
+  },
+  {
+    id: "a13", obj: "1.2", type: "multi",
+    q: "`in` is a `Scanner` reading `System.in`. Which two methods return a `String`? (Choose two.)",
+    options: [
+      "`in.next()`",
+      "`in.nextLine()`",
+      "`in.nextInt()`",
+      "`in.nextDouble()`",
+      "`in.nextBoolean()`"
+    ],
+    answer: [0, 1],
+    why: "`next()` returns the next word (stops at whitespace) and `nextLine()` returns the rest of the line including spaces. The others return primitives."
+  },
+  {
+    id: "a14", obj: "1.2", type: "type",
+    q: "The user enters `12 7.5 hello world` on one line. What is the output?",
+    code: String.raw`Scanner in = new Scanner(System.in);
+int a = in.nextInt();
+double b = in.nextDouble();
+String c = in.next();
+System.out.println(a + b);
+System.out.println(c);`,
+    answer: "19.5\nhello",
+    why: "`a + b` is int + double, so it's numeric addition giving a double `19.5`. `next()` reads only one token, `hello`, and stops at the space."
+  },
+
+  // ---------- 1.3 scope ----------
+  {
+    id: "a15", obj: "1.3", type: "mc",
+    q: "What is the result?",
+    code: String.raw`for (int i = 0; i < 3; i++) {
+    int total = i * 2;
+}
+System.out.println(i);`,
+    options: [
+      "Compilation fails",
+      "`3` is printed",
+      "`2` is printed",
+      "A runtime exception is thrown"
+    ],
+    answer: 0,
+    why: "`i` is declared in the `for` header, so its scope ends with the loop. Using it afterwards is a compile error (`cannot find symbol`). To use it later, declare `int i;` before the loop."
+  },
+  {
+    id: "a16", obj: "1.3", type: "type",
+    q: "What is the output?",
+    code: String.raw`public class Counter {
+    private int count = 10;
+    public void update(int count) {
+        count = count + 5;
+        System.out.println(count);
+        System.out.println(this.count);
+    }
+    public static void main(String[] args) {
+        new Counter().update(1);
+    }
+}`,
+    answer: "6\n10",
+    why: "The parameter `count` shadows the field, so `count = count + 5` changes only the parameter (1 + 5 = 6). `this.count` refers to the field, which is still 10."
+  },
+  {
+    id: "a17", obj: "1.3", type: "mc",
+    q: "What is the result?",
+    code: String.raw`int score = 70;
+int total;
+if (score > 50) {
+    total = 100;
+}
+System.out.println(total);`,
+    options: [
+      "Compilation fails because `total` might not have been initialized",
+      "`100` is printed",
+      "`0` is printed",
+      "A `NullPointerException` is thrown"
+    ],
+    answer: 0,
+    why: "Local variables get NO default value. The compiler sees a path (if the condition is false) where `total` is never assigned, so it refuses to compile. Only fields default to 0."
+  },
+  {
+    id: "a18", obj: "1.3", type: "yn",
+    q: "For each statement about variable scope, select Yes if true, No if false.",
+    statements: [
+      "A variable declared inside an `if` block can be used after the block ends",
+      "An instance variable can be used by every instance method in its class",
+      "A local variable declared in `main` can be used directly inside another static method of the same class"
+    ],
+    answer: [false, true, false],
+    why: "Block variables die at the closing `}`. Instance variables have class-wide scope. Locals in `main` belong only to `main`; another method needs them passed as parameters."
+  },
+  {
+    id: "a19", obj: "1.3", type: "mc",
+    q: "What is the result?",
+    code: String.raw`int x = 5;
+{
+    int x = 10;
+    System.out.println(x);
+}`,
+    options: [
+      "Compilation fails",
+      "`10` is printed",
+      "`5` is printed",
+      "`10` and then `5` are printed"
+    ],
+    answer: 0,
+    why: "Java does not let an inner block redeclare a local variable that's still in scope (`variable x is already defined`). Only a field can be shadowed by a local."
+  },
+  {
+    id: "a20", obj: "1.3", type: "type",
+    q: "What is the output?",
+    code: String.raw`public class Ticket {
+    static int sold = 0;
+    int id;
+    Ticket() { sold++; id = sold; }
+    public static void main(String[] args) {
+        Ticket a = new Ticket();
+        Ticket b = new Ticket();
+        Ticket c = new Ticket();
+        System.out.println(a.id + " " + c.id + " " + a.sold);
+    }
+}`,
+    answer: "1 3 3",
+    why: "`sold` is static, so one copy is shared by all objects and ends at 3. `id` is per-object: `a` got 1 and `c` got 3. `a.sold` reads the shared value 3."
+  },
+
+  // ---------- 2.1 primitives ----------
+  {
+    id: "a21", obj: "2.1", type: "mc",
+    q: "Which declaration compiles?",
+    options: [
+      "`float price = 19.99f;`",
+      "`float price = 19.99;`",
+      "`long big = 3000000000;`",
+      "`int count = 5L;`"
+    ],
+    answer: 0,
+    why: "A decimal literal is a `double` by default, so a `float` needs the `f` suffix. `3000000000` is too big for an int literal and needs `L`. `5L` is a long and can't go into an int without a cast."
+  },
+  {
+    id: "a22", obj: "2.1", type: "multi",
+    q: "Which two declarations compile? (Choose two.)",
+    options: [
+      "`byte b = 127;`",
+      "`char c = 65;`",
+      "`byte b = 128;`",
+      "`short s = 40000;`",
+      "`boolean flag = 0;`"
+    ],
+    answer: [0, 1],
+    why: "`byte` holds -128 to 127 and `char` can be assigned an int constant 0 to 65535 (65 is `'A'`). 128 overflows byte, 40000 exceeds short's max of 32767, and Java booleans are only `true`/`false`."
+  },
+  {
+    id: "a23", obj: "2.1", type: "type",
+    q: "What is the output?",
+    code: String.raw`char c = 'A';
+System.out.println(c + 2);
+System.out.println((char)(c + 2));
+c += 1;
+System.out.println(c);`,
+    answer: "67\nC\nB",
+    why: "`char + int` is promoted to int, so `'A' + 2` prints 67. Casting back to `char` prints `C`. `c += 1` has a built-in cast, so `c` stays a char and becomes `B`."
+  },
+  {
+    id: "a24", obj: "2.1", type: "type",
+    q: "What is the output?",
+    code: String.raw`int max = Integer.MAX_VALUE;
+max++;
+System.out.println(max);
+byte b = (byte) 130;
+System.out.println(b);`,
+    answer: "-2147483648\n-126",
+    why: "Integer overflow wraps around silently with no exception: MAX_VALUE + 1 becomes MIN_VALUE. Casting 130 to byte wraps too: 130 - 256 = -126."
+  },
+  {
+    id: "a25", obj: "2.1", type: "mc",
+    q: "A class declares the fields `int count; double rate; boolean active; String name;` without assigning them. In `main`, you create an object `t` and run `System.out.println(t.count + \" \" + t.rate + \" \" + t.active + \" \" + t.name);`. What is printed?",
+    options: [
+      "`0 0.0 false null`",
+      "`0 0 false null`",
+      "`0 0.0 false` followed by a blank",
+      "Nothing; compilation fails because the fields are not initialized"
+    ],
+    answer: 0,
+    why: "FIELDS get default values: numeric 0 / 0.0, boolean `false`, objects `null` (printed as the word `null`). Only LOCAL variables must be initialized before use."
+  },
+  {
+    id: "a26", obj: "2.1", type: "yn",
+    q: "For each statement about primitive types, select Yes if true, No if false.",
+    statements: [
+      "An `int` is stored in 32 bits",
+      "A `char` stores a 16-bit Unicode character",
+      "A `long` variable can be assigned to an `int` variable without a cast"
+    ],
+    answer: [true, true, false],
+    why: "int = 32 bits, char = 16 bits (unsigned Unicode). Going from long (64-bit) to int is narrowing, so it needs an explicit `(int)` cast."
+  },
+  {
+    id: "a27", obj: "2.1", type: "mc",
+    q: "Which assignment does NOT compile without an explicit cast?",
+    options: [
+      "`int i = 9.0;`",
+      "`double d = 10;`",
+      "`long l = 'x';`",
+      "`float f = 100L;`"
+    ],
+    answer: 0,
+    why: "`9.0` is a double; double to int is narrowing and needs `(int)`. The others are widening conversions (int to double, char to long, long to float), which Java does automatically."
+  },
+  {
+    id: "a28", obj: "2.1", type: "type",
+    q: "What is the output?",
+    code: String.raw`double avg = 17 / 4;
+System.out.println(avg);
+int pct = (int) (0.29 * 100);
+System.out.println(pct);`,
+    answer: "4.0\n28",
+    why: "`17 / 4` is integer division (4) BEFORE it's stored in the double, so you get `4.0`, not 4.25. `0.29 * 100` is really 28.999999999999996 in floating point, and the `(int)` cast truncates it to 28."
+  },
+
+  // ---------- 2.4 parsing / casting / conversion ----------
+  {
+    id: "a29", obj: "2.4", type: "type",
+    q: "What is the output?",
+    code: String.raw`String a = "12";
+String b = "3";
+System.out.println(a + b);
+System.out.println(Integer.parseInt(a) + Integer.parseInt(b));
+System.out.println(Integer.parseInt(a + b) / 2);`,
+    answer: "123\n15\n61",
+    why: "String + String concatenates (`123`). Parsing each first gives 12 + 3 = 15. `parseInt(\"123\") / 2` is integer division: 61."
+  },
+  {
+    id: "a30", obj: "2.4", type: "mc",
+    q: "What is the result of `int n = Integer.parseInt(\"4.0\");`?",
+    options: [
+      "A `NumberFormatException` is thrown at runtime",
+      "`n` is `4`",
+      "Compilation fails",
+      "`n` is `0`"
+    ],
+    answer: 0,
+    why: "`parseInt` only accepts whole-number text. `\"4.0\"` has a decimal point, so it throws `NumberFormatException`. It compiles fine because the argument is a valid String."
+  },
+  {
+    id: "a31", obj: "2.4", type: "multi",
+    q: "The variable `int count = 42;` must be converted to a `String`. Which three expressions will work? (Choose three.)",
+    options: [
+      "`String.valueOf(count)`",
+      "`Integer.toString(count)`",
+      "`\"\" + count`",
+      "`(String) count`",
+      "`count.toString()`"
+    ],
+    answer: [0, 1, 2],
+    why: "`String.valueOf`, `Integer.toString`, and concatenating with `\"\"` all produce `\"42\"`. You can't cast a primitive to String, and a primitive has no methods (`int cannot be dereferenced`)."
+  },
+  {
+    id: "a32", obj: "2.4", type: "type",
+    q: "What is the output?",
+    code: String.raw`System.out.println((int) 3.99);
+System.out.println((int) -3.99);
+System.out.println(Math.round(3.5));
+System.out.println(Math.round(-3.5));`,
+    answer: "3\n-3\n4\n-3",
+    why: "Casting to int truncates toward zero, it does not round. `Math.round` rounds half UP (toward positive infinity): 3.5 to 4, but -3.5 to -3."
+  },
+  {
+    id: "a33", obj: "2.4", type: "mc",
+    q: "In the code `Integer x = 5; int y = x + 2;`, the `Integer` object is automatically converted to an `int` when computing `x + 2`. What is this called?",
+    options: ["Unboxing", "Autoboxing", "Explicit casting", "Parsing"],
+    answer: 0,
+    why: "Wrapper object to primitive is unboxing. Primitive to wrapper (`Integer x = 5`) is autoboxing. Parsing converts a String to a number."
+  },
+  {
+    id: "a34", obj: "2.4", type: "mc",
+    q: "The variable `String s = \"7.25\";` holds user input. You need to store its numeric value in a `double`. Which statement should you use?",
+    options: [
+      "`double d = Double.parseDouble(s);`",
+      "`double d = (double) s;`",
+      "`double d = s.toDouble();`",
+      "`double d = Integer.parseInt(s);`"
+    ],
+    answer: 0,
+    why: "`Double.parseDouble` converts text to a double. A String can't be cast to a primitive, String has no `toDouble()` method, and `parseInt` throws `NumberFormatException` on `\"7.25\"`."
+  },
+  {
+    id: "a35", obj: "2.4", type: "yn",
+    q: "For each statement, select Yes if true, No if false.",
+    statements: [
+      "`Integer.parseInt(\" 42\")` (with a leading space) returns `42`",
+      "`Integer.valueOf(\"42\")` returns an `Integer` object",
+      "`Double.parseDouble(\"7\")` returns `7.0`"
+    ],
+    answer: [false, true, true],
+    why: "`parseInt` does not trim whitespace, so `\" 42\"` throws `NumberFormatException`. `valueOf` returns the wrapper object; `parseInt` returns a primitive. `parseDouble` happily reads whole numbers."
+  },
+
+  // ---------- 2.5 arithmetic ----------
+  {
+    id: "a36", obj: "2.5", type: "type",
+    q: "What is the output?",
+    code: String.raw`System.out.println(17 / 5);
+System.out.println(17 % 5);
+System.out.println(17 / 5.0);
+System.out.println(-17 % 5);`,
+    answer: "3\n2\n3.4\n-2",
+    why: "int / int drops the decimal (3). `%` is the remainder (2). One double operand makes it decimal division (3.4). The sign of a `%` result follows the LEFT operand, so -17 % 5 is -2."
+  },
+  {
+    id: "a37", obj: "2.5", type: "type",
+    q: "What is the output?",
+    code: String.raw`int a = 4, b = 6;
+System.out.println(a + b + "!" + a + b);
+System.out.println("" + a * b + a);`,
+    answer: "10!46\n244",
+    why: "`+` runs left to right: `4 + 6` is numeric (10) until a String appears, then everything after is concatenation (`46`). On line 2, `*` binds tighter than `+`, so `a * b` = 24 first, then `\"24\" + 4`."
+  },
+  {
+    id: "a38", obj: "2.5", type: "type",
+    q: "What is the output?",
+    code: String.raw`int x = 5;
+int y = x++ + ++x;
+System.out.println(x + " " + y);`,
+    answer: "7 12",
+    why: "`x++` uses 5 and then bumps x to 6. `++x` bumps x to 7 and uses 7. y = 5 + 7 = 12, and x ends at 7."
+  },
+  {
+    id: "a39", obj: "2.5", type: "mc",
+    q: "`int total = 10;` has been declared. Which statement is true?",
+    options: [
+      "`total += 2.5;` compiles and sets `total` to 12, but `total = total + 2.5;` does not compile",
+      "Both statements compile and set `total` to 12.5",
+      "Both statements compile and set `total` to 12",
+      "`total += 2.5;` does not compile, but `total = total + 2.5;` does"
+    ],
+    answer: 0,
+    why: "Compound operators (`+=`, `-=`, `*=`, ...) include a hidden cast back to the variable's type, so 12.5 is truncated to 12. The long form yields a double that can't go into an int without a cast."
+  },
+  {
+    id: "a40", obj: "2.5", type: "type",
+    q: "What is the output?",
+    code: String.raw`int r = 2 + 3 * 4 - 8 / 3 % 2;
+System.out.println(r);
+System.out.println(10 - 4 - 3);
+System.out.println((2 + 3) * 4 / 3);`,
+    answer: "14\n3\n6",
+    why: "`*`, `/`, `%` go first, left to right: 3*4 = 12, 8/3 = 2, 2%2 = 0, so 2 + 12 - 0 = 14. Same-level operators go left to right: (10-4)-3 = 3. Parentheses first: 5*4 = 20, 20/3 = 6 (integer division)."
+  },
+  {
+    id: "a41", obj: "2.5", type: "mc",
+    q: "You are simulating a die roll. You need a random integer from 1 through 6, inclusive. Which expression should you use?",
+    options: [
+      "`(int) (Math.random() * 6) + 1`",
+      "`(int) Math.random() * 6 + 1`",
+      "`(int) (Math.random() * 7)`",
+      "`(int) (Math.random() * 6)`"
+    ],
+    answer: 0,
+    why: "`Math.random()` returns 0.0 up to (but not including) 1.0; times 6 gives 0 to 5.99, cast gives 0 to 5, +1 gives 1 to 6. Without the parentheses the cast hits `Math.random()` alone (always 0), so the result is always 1. `* 7` gives 0 to 6; no `+1` gives 0 to 5."
+  },
+  {
+    id: "a42", obj: "2.5", type: "type",
+    q: "What is the output?",
+    code: String.raw`System.out.println(Math.pow(2, 3));
+System.out.println(Math.sqrt(49));
+System.out.println(Math.max(-4, Math.abs(-9)));
+System.out.println(Math.ceil(4.1) + Math.floor(4.9));`,
+    answer: "8.0\n7.0\n9\n9.0",
+    why: "`Math.pow` and `Math.sqrt` always return double (`8.0`, `7.0`). `max` of two ints returns an int (9). `ceil(4.1)` = 5.0 and `floor(4.9)` = 4.0, both doubles, sum 9.0."
+  },
+  {
+    id: "a43", obj: "2.5", type: "type",
+    q: "What is the output?",
+    code: String.raw`int n = 20;
+n -= 4;
+n *= 2;
+n /= 3;
+n %= 4;
+System.out.println(n);`,
+    answer: "2",
+    why: "20 - 4 = 16; 16 * 2 = 32; 32 / 3 = 10 (integer division); 10 % 4 = 2."
+  },
+  {
+    id: "a44", obj: "2.5", type: "multi",
+    q: "Which two expressions evaluate to `2.5`? (Choose two.)",
+    options: [
+      "`5 / 2.0`",
+      "`(double) 5 / 2`",
+      "`5 / 2`",
+      "`(double) (5 / 2)`",
+      "`(int) 5.0 / 2`"
+    ],
+    answer: [0, 1],
+    why: "One double operand forces decimal division. `(double) 5 / 2` casts 5 BEFORE dividing. `(double) (5 / 2)` divides first as ints (2) and then gives 2.0. `(int) 5.0 / 2` is int division (2)."
+  },
+  {
+    id: "a45", obj: "2.5", type: "yn",
+    q: "For each statement, select Yes if true, No if false.",
+    statements: [
+      "`10 % 3` evaluates to `1`",
+      "`Math.pow(3, 2)` returns the `int` value `9`",
+      "`(double) 7 / 2` evaluates to `3.5`"
+    ],
+    answer: [true, false, true],
+    why: "10 / 3 is 3 remainder 1. `Math.pow` always returns a double (`9.0`), so storing it in an int needs a cast. The cast applies to 7 before dividing, so it's decimal division."
+  }
+]);
+
+window.QB = (window.QB || []).concat([
+  // ---------- 2.2 Strings ----------
+  {
+    id: "b01", obj: "2.2", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`String s = "java";
+s.toUpperCase();
+s.concat("21");
+System.out.println(s + s.length());`,
+    answer: "java4",
+    why: "Strings are immutable. `toUpperCase()` and `concat()` return NEW strings, but the results are never assigned back to `s`, so `s` is still `\"java\"` (length 4). To keep the change you must write `s = s.toUpperCase();`."
+  },
+  {
+    id: "b02", obj: "2.2", type: "mc",
+    q: "What is the output of the following code segment?",
+    code: String.raw`String a = "Hi";
+String b = "Hi";
+String c = new String("Hi");
+System.out.println((a == b) + " " + (a == c) + " " + a.equals(c));`,
+    options: ["`true false true`", "`true true true`", "`false false true`", "`true false false`"],
+    answer: 0,
+    why: "`a` and `b` are both literals, so they point to the same pooled object (`==` is true). `new String(\"Hi\")` creates a separate object, so `a == c` is false even though the text matches. `equals()` compares characters, so it is true. Always use `.equals()` to compare string content."
+  },
+  {
+    id: "b03", obj: "2.2", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`String w = "certification";
+System.out.println(w.substring(4, 8) + w.substring(10));`,
+    answer: "ificion",
+    why: "Index from 0: c0 e1 r2 t3 i4 f5 i6 c7 a8 t9 i10 o11 n12. `substring(4, 8)` takes indexes 4–7 (end is EXCLUSIVE) = `ific`. `substring(10)` takes index 10 to the end = `ion`."
+  },
+  {
+    id: "b04", obj: "2.2", type: "mc",
+    q: "What is the output of the following code segment?",
+    code: String.raw`String s = "banana";
+System.out.println(s.indexOf("an") + " " + s.lastIndexOf('a') + " " + s.indexOf("x"));`,
+    options: ["`1 5 -1`", "`1 5 0`", "`2 6 -1`", "`1 3 -1`"],
+    answer: 0,
+    why: "b0 a1 n2 a3 n4 a5. The first `\"an\"` starts at index 1, the last `'a'` is at index 5, and a search that finds nothing returns `-1` (not 0, and not an exception)."
+  },
+  {
+    id: "b05", obj: "2.2", type: "mc",
+    q: "What happens when the following code segment runs?",
+    code: String.raw`String code = "ABC";
+for (int i = 0; i <= code.length(); i++) {
+    System.out.print(code.charAt(i));
+}`,
+    options: ["`ABC` is printed, then a `StringIndexOutOfBoundsException` is thrown", "`ABC` is printed", "`AB` is printed", "The code does not compile"],
+    answer: 0,
+    why: "Valid indexes are 0 to `length() - 1` (0–2). The loop uses `<=`, so on the last pass it calls `charAt(3)` after already printing `ABC`, which throws `StringIndexOutOfBoundsException` at runtime. It compiles fine; the bug is off-by-one."
+  },
+  {
+    id: "b06", obj: "2.2", type: "type",
+    q: "What is the output? (Type each line on its own line.)",
+    code: String.raw`char c = 'A';
+System.out.println(c + 1);
+System.out.println("" + c + 1);
+System.out.println((char) (c + 1));`,
+    answer: "66\nA1\nB",
+    why: "`char + int` is numeric addition: `'A'` is 65, so `c + 1` is `66`. Once a String is on the left (`\"\" + c`), `+` becomes concatenation left-to-right, giving `A1`. Casting 66 back to `char` gives `B`."
+  },
+  {
+    id: "b07", obj: "2.2", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`String name = null;
+String msg = "Hello " + name;
+System.out.println(msg.length());`,
+    answer: "10",
+    why: "Concatenating `null` does NOT throw; it inserts the text `null`, so `msg` is `\"Hello null\"` (10 characters). Only calling a method ON a null reference (like `name.length()`) throws a `NullPointerException`."
+  },
+  {
+    id: "b08", obj: "2.2", type: "mc",
+    q: "What happens when the following code segment runs?",
+    code: String.raw`String answer = null;
+if (answer.equals("yes")) {
+    System.out.println("Y");
+} else {
+    System.out.println("N");
+}`,
+    options: ["A `NullPointerException` is thrown", "`N` is printed", "`Y` is printed", "The code does not compile"],
+    answer: 0,
+    why: "Calling any method on a `null` reference throws `NullPointerException` at runtime. It compiles because `answer` is a valid `String` variable. The safe version is `\"yes\".equals(answer)`, which just returns false."
+  },
+  {
+    id: "b09", obj: "2.2", type: "mc",
+    q: "After the following code runs, which statement about `r` is true?",
+    code: String.raw`String x = "apple";
+String y = "Apple";
+int r = x.compareTo(y);`,
+    options: ["`r` is a positive number", "`r` is 0", "`r` is a negative number", "The code does not compile because `compareTo` returns a `boolean`"],
+    answer: 0,
+    why: "`compareTo` returns an `int`: negative if the caller comes first, 0 if equal, positive if it comes after. Lowercase `'a'` (97) is greater than uppercase `'A'` (65), so `\"apple\".compareTo(\"Apple\")` is positive (32). `compareToIgnoreCase` would return 0."
+  },
+  {
+    id: "b10", obj: "2.2", type: "multi",
+    q: "You need to test whether the user's input `cmd` is the word quit, regardless of capitalization. Which two expressions should you use? (Choose two.)",
+    options: [
+      "`cmd.equalsIgnoreCase(\"QUIT\")`",
+      "`cmd.toLowerCase().equals(\"quit\")`",
+      "`cmd == \"quit\"`",
+      "`cmd.equals(\"Quit\")`",
+      "`cmd.toLowerCase() == \"quit\"`"
+    ],
+    answer: [0, 1],
+    why: "`equalsIgnoreCase` ignores case, and lowercasing first then using `equals` also works. `==` compares references (and `toLowerCase()` creates a new object), so it is unreliable. `equals(\"Quit\")` is case-sensitive."
+  },
+  {
+    id: "b11", obj: "2.2", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`StringBuilder sb = new StringBuilder("code");
+sb.append(42).insert(0, "#").reverse();
+System.out.println(sb);`,
+    answer: "24edoc#",
+    why: "Unlike `String`, `StringBuilder` is mutable, so each call changes `sb` itself: `code` → `code42` → `#code42` (insert at index 0) → reversed `24edoc#`."
+  },
+  {
+    id: "b12", obj: "2.2", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`String s = "  java rocks  ";
+s = s.trim().replace('a', 'o').toUpperCase();
+System.out.println(s + "|" + s.length());`,
+    answer: "JOVO ROCKS|10",
+    why: "This time the result IS assigned back. `trim()` removes leading/trailing spaces (not the middle one) → `java rocks`; `replace('a','o')` replaces every `a` → `jovo rocks`; then uppercase. Length is 10 including the middle space."
+  },
+  {
+    id: "b13", obj: "2.2", type: "yn",
+    q: "For each statement, select Yes if the statement is true. Otherwise, select No.",
+    statements: [
+      "`\"Java\".length()` returns `4`.",
+      "Calling `s.replace('a', 'b');` on its own line changes the contents of `s`.",
+      "`\"abc\".substring(1, 1)` returns an empty string."
+    ],
+    answer: [true, false, true],
+    why: "`length()` counts characters (4). Strings are immutable, so `replace` returns a new string; unless you assign it (`s = s.replace(...)`), `s` is unchanged. `substring(1, 1)` has begin == end, which is legal and returns `\"\"`."
+  },
+  {
+    id: "b14", obj: "2.2", type: "mc",
+    q: "What is the output of the following code segment?",
+    code: String.raw`double price = 7.5;
+int qty = 3;
+System.out.println(String.format("%d x $%.2f = $%.1f", qty, price, qty * price));`,
+    options: ["`3 x $7.50 = $22.5`", "`3 x $7.5 = $22.50`", "`3 x $7.50 = $22.50`", "An `IllegalFormatConversionException` is thrown"],
+    answer: 0,
+    why: "`%d` formats the int 3. `%.2f` rounds to 2 decimals (`7.50`), `%.1f` to 1 decimal (`22.5`). The exception would only happen if a type didn't match its specifier, e.g. passing a `double` to `%d`."
+  },
+  {
+    id: "b15", obj: "2.2", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`String file = "Report2024.java";
+boolean a = file.endsWith(".java");
+boolean b = file.startsWith("report");
+boolean c = file.contains("20");
+System.out.println(a + " " + b + " " + c);`,
+    answer: "true false true",
+    why: "`startsWith`, `endsWith` and `contains` are all case-sensitive. The file starts with `Report` (capital R), so `startsWith(\"report\")` is false. `\"20\"` appears inside `2024`."
+  },
+  {
+    id: "b16", obj: "2.2", type: "mc",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int a = 3, b = 4;
+System.out.println(a + b + "=" + a + b);`,
+    options: ["`7=34`", "`34=34`", "`7=7`", "`34=7`"],
+    answer: 0,
+    why: "`+` evaluates left to right. `a + b` are both ints, so that is math: 7. After the String `\"=\"` joins in, everything else is concatenation: `\"7=\" + 3` → `\"7=3\"`, then `+ 4` → `\"7=34\"`. Use parentheses `(a + b)` to force math."
+  },
+  {
+    id: "b17", obj: "2.2", type: "multi",
+    q: "Given `String s = \"Hello\";`, which two expressions evaluate to `true`? (Choose two.)",
+    options: [
+      "`s.indexOf('l') == 2`",
+      "`s.charAt(4) == 'o'`",
+      "`s.substring(1, 3).equals(\"ell\")`",
+      "`s.length() == 6`",
+      "`s.toLowerCase() == \"hello\"`"
+    ],
+    answer: [0, 1],
+    why: "H0 e1 l2 l3 o4. The first `l` is at 2, and `charAt(4)` is `o`. `substring(1, 3)` is `el` (end exclusive). Length is 5. `toLowerCase()` makes a new object, so `==` is false even though the text matches."
+  },
+  {
+    id: "b18", obj: "2.2", type: "yn",
+    q: "For each statement, select Yes if the statement is true. Otherwise, select No.",
+    statements: [
+      "`s1.equals(s2)` compares the characters of two strings.",
+      "`\"Cat\".compareTo(\"Dog\")` returns a negative number.",
+      "`str.charAt(str.length())` returns the last character of `str`."
+    ],
+    answer: [true, true, false],
+    why: "`equals` compares content. `C` comes before `D`, so `compareTo` is negative. The last character is at `str.length() - 1`; `charAt(str.length())` throws `StringIndexOutOfBoundsException`."
+  },
+
+  // ---------- 2.3 Arrays & ArrayList ----------
+  {
+    id: "b19", obj: "2.3", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int[] nums = new int[3];
+boolean[] flags = new boolean[2];
+String[] names = new String[2];
+System.out.println(nums[1] + " " + flags[0] + " " + names[1]);`,
+    answer: "0 false null",
+    why: "Array elements get default values automatically: `0` for int, `0.0` for double, `false` for boolean, `'\\u0000'` for char, and `null` for objects like `String`. (Local variables, by contrast, have NO default and must be initialized.)"
+  },
+  {
+    id: "b20", obj: "2.3", type: "mc",
+    q: "You have `int[] arr`, `String s`, and `ArrayList<String> list`. Which option correctly gets the number of elements/characters in each, in that order?",
+    options: [
+      "`arr.length`, `s.length()`, `list.size()`",
+      "`arr.length()`, `s.length()`, `list.size()`",
+      "`arr.length`, `s.length`, `list.length()`",
+      "`arr.size()`, `s.length()`, `list.length`"
+    ],
+    answer: 0,
+    why: "Arrays use the field `length` (no parentheses). Strings use the method `length()`. ArrayLists use the method `size()`. Mixing these up is a compile error."
+  },
+  {
+    id: "b21", obj: "2.3", type: "mc",
+    q: "What happens when the following code segment runs?",
+    code: String.raw`int[] scores = {90, 85, 77};
+int total = 0;
+for (int i = 0; i <= scores.length; i++) {
+    total += scores[i];
+}
+System.out.println(total);`,
+    options: ["An `ArrayIndexOutOfBoundsException` is thrown and nothing is printed", "`252` is printed", "`167` is printed", "The code does not compile"],
+    answer: 0,
+    why: "The array has indexes 0–2. With `<=`, the loop reaches `scores[3]`, which throws `ArrayIndexOutOfBoundsException` BEFORE the `println` runs. Fix: `i < scores.length`."
+  },
+  {
+    id: "b22", obj: "2.3", type: "mc",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int[][] g = new int[3][4];
+g[2][3] = 9;
+System.out.println(g.length + " " + g[0].length + " " + g[2][3] + " " + g[1][1]);`,
+    options: ["`3 4 9 0`", "`4 3 9 0`", "`3 4 9 null`", "`2 3 9 0`"],
+    answer: 0,
+    why: "`new int[3][4]` is 3 rows × 4 columns. `g.length` is the number of rows (3); `g[0].length` is the columns in row 0 (4). Unset int elements default to 0, not null."
+  },
+  {
+    id: "b23", obj: "2.3", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int[][] t = { {1, 2}, {3, 4, 5}, {6} };
+int sum = 0;
+for (int r = 0; r < t.length; r++) {
+    sum += t[r][t[r].length - 1];
+}
+System.out.println(sum);`,
+    answer: "13",
+    why: "This is a jagged array: each row has its own length. `t[r][t[r].length - 1]` is the LAST element of each row: 2 + 5 + 6 = 13."
+  },
+  {
+    id: "b24", obj: "2.3", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int[] vals = {1, 2, 3};
+for (int v : vals) {
+    v = v * 10;
+}
+System.out.println(vals[0] + vals[1] + vals[2]);`,
+    answer: "6",
+    why: "Trap #1: in a for-each loop, `v` is a COPY of each element, so changing `v` does not change the array. Trap #2: `vals[0] + vals[1] + vals[2]` is int addition (1 + 2 + 3 = 6), not concatenation, because no String is involved."
+  },
+  {
+    id: "b25", obj: "2.3", type: "multi",
+    q: "You need to create an empty list that will hold whole numbers. Which two declarations compile? (Choose two.)",
+    options: [
+      "`ArrayList<Integer> list = new ArrayList<>();`",
+      "`ArrayList<Integer> list = new ArrayList<Integer>();`",
+      "`ArrayList<int> list = new ArrayList<int>();`",
+      "`ArrayList<Integer> list = new ArrayList<Integer>[];`",
+      "`ArrayList list<Integer> = new ArrayList();`"
+    ],
+    answer: [0, 1],
+    why: "Generics only accept object types, so you must use the wrapper class `Integer`, not the primitive `int`. The diamond `<>` lets Java infer the type. `[]` makes it an array creation, not a list, and the type parameter belongs on the type, not the variable name."
+  },
+  {
+    id: "b26", obj: "2.3", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`ArrayList<String> list = new ArrayList<>();
+list.add("A");
+list.add("B");
+list.add(0, "C");
+list.set(1, "D");
+list.remove("B");
+System.out.println(list);`,
+    answer: "[C, D]",
+    accept: ["[C,D]"],
+    why: "[A] → [A, B] → `add(0, \"C\")` INSERTS and shifts: [C, A, B] → `set(1, \"D\")` REPLACES index 1: [C, D, B] → `remove(\"B\")` removes by value: [C, D]. `println` on an ArrayList prints it in brackets."
+  },
+  {
+    id: "b27", obj: "2.3", type: "mc",
+    q: "What is the output of the following code segment?",
+    code: String.raw`ArrayList<Integer> nums = new ArrayList<>();
+nums.add(10);
+nums.add(20);
+nums.add(1);
+nums.remove(1);
+System.out.println(nums);`,
+    options: ["`[10, 1]`", "`[10, 20]`", "`[20, 1]`", "An `IndexOutOfBoundsException` is thrown"],
+    answer: 0,
+    why: "With an `ArrayList<Integer>`, `remove(1)` passes an `int`, so Java calls `remove(int index)` and removes the element AT INDEX 1 (20). To remove the value 1 you would write `nums.remove(Integer.valueOf(1))`."
+  },
+  {
+    id: "b28", obj: "2.3", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`ArrayList<Integer> list = new ArrayList<>();
+list.add(2); list.add(4); list.add(5); list.add(6);
+for (int i = 0; i < list.size(); i++) {
+    if (list.get(i) % 2 == 0) {
+        list.remove(i);
+    }
+}
+System.out.println(list);`,
+    answer: "[4, 5]",
+    accept: ["[4,5]"],
+    why: "Removing while looping forward SKIPS elements. i=0: remove 2 → [4, 5, 6], and 4 slides into index 0. i=1: 5 is odd. i=2: remove 6 → [4, 5]. The 4 was never checked. Loop backward (or use `i--` after removing) to fix it."
+  },
+  {
+    id: "b29", obj: "2.3", type: "mc",
+    q: "What happens when the following code segment runs?",
+    code: String.raw`ArrayList<String> items = new ArrayList<>();
+items.add("pen");
+items.add("ink");
+System.out.println(items.get(items.size()));`,
+    options: ["An `IndexOutOfBoundsException` is thrown", "`ink` is printed", "`null` is printed", "`pen` is printed"],
+    answer: 0,
+    why: "`size()` is 2, but the valid indexes are 0 and 1. `get(2)` throws `IndexOutOfBoundsException`. The last element is `items.get(items.size() - 1)`."
+  },
+  {
+    id: "b30", obj: "2.3", type: "yn",
+    q: "For each statement, select Yes if the statement is true. Otherwise, select No.",
+    statements: [
+      "An `ArrayList` grows automatically as elements are added.",
+      "`list.indexOf(\"x\")` returns `-1` if `\"x\"` is not in the list.",
+      "After `list.clear()` runs, `list.isEmpty()` returns `false`."
+    ],
+    answer: [true, true, false],
+    why: "ArrayLists resize themselves (arrays cannot). `indexOf` returns -1 when the item is missing. `clear()` removes every element, so `isEmpty()` returns true."
+  },
+  {
+    id: "b31", obj: "2.3", type: "multi",
+    q: "You need to declare an array that holds five `int` values. Which three statements compile? (Choose three.)",
+    options: [
+      "`int[] a = new int[5];`",
+      "`int a[] = new int[5];`",
+      "`int[] a = {0, 0, 0, 0, 0};`",
+      "`int[5] a = new int[];`",
+      "`int[] a = new int();`",
+      "`int a = new int[5];`"
+    ],
+    answer: [0, 1, 2],
+    why: "The size goes on the right side with `new`, and `int a[]` is a legal (older) style. An initializer list `{...}` sets both size and values. You can never put the size in the declared type (`int[5] a`), and `int a` is not an array type."
+  },
+  {
+    id: "b32", obj: "2.3", type: "type",
+    q: "Assume `java.util.Arrays` is imported. What is the output?",
+    code: String.raw`int[] a = {5, 3, 9, 1};
+Arrays.sort(a);
+System.out.println(a[0] + a[a.length - 1] + " " + Arrays.toString(a));`,
+    answer: "10 [1, 3, 5, 9]",
+    accept: ["10 [1,3,5,9]"],
+    why: "After sorting, the array is [1, 3, 5, 9]. `a[0] + a[3]` is int math (1 + 9 = 10) because it happens before any String. `Arrays.toString` prints the elements in brackets."
+  },
+  {
+    id: "b33", obj: "2.3", type: "mc",
+    q: "What is printed by the following code segment?",
+    code: String.raw`int[] data = {1, 2, 3};
+System.out.println(data);`,
+    options: ["Text such as `[I@1b6d3586` (a type code and hash code)", "`[1, 2, 3]`", "`123`", "Nothing; the code does not compile"],
+    answer: 0,
+    why: "Printing an array variable prints its reference (type `[I` = int array, then `@` and a hash), not its contents. Use `Arrays.toString(data)` or a loop to print the values. ArrayLists, by contrast, DO print as `[1, 2, 3]`."
+  },
+  {
+    id: "b34", obj: "2.3", type: "yn",
+    q: "For each statement, select Yes if the statement is true. Otherwise, select No.",
+    statements: [
+      "`int[] a = new int[0];` compiles and creates an empty array.",
+      "The index of the last element of array `a` is `a.length`.",
+      "An array's size cannot change after the array is created."
+    ],
+    answer: [true, false, true],
+    why: "Zero-length arrays are legal. The last index is `a.length - 1`. Arrays are fixed-size; use an `ArrayList` when you need to add or remove elements."
+  },
+
+  // ---------- 3.1 Branching ----------
+  {
+    id: "b35", obj: "3.1", type: "mc",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int score = 85;
+if (score >= 60) {
+    System.out.println("D");
+} else if (score >= 80) {
+    System.out.println("B");
+} else if (score >= 90) {
+    System.out.println("A");
+}`,
+    options: ["`D` only", "`B` only", "`D` and then `B`", "`A` only"],
+    answer: 0,
+    why: "In an if / else-if chain, only the FIRST true branch runs and the rest are skipped. 85 >= 60 is true, so it prints `D`. This is a logic error: the conditions should be checked from highest to lowest."
+  },
+  {
+    id: "b36", obj: "3.1", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int x = 3;
+if (x > 5)
+    System.out.print("big ");
+    System.out.print("value ");
+System.out.print("done");`,
+    answer: "value done",
+    why: "Without braces, an `if` controls ONLY the next single statement. The indentation of the second `print` is misleading; it runs no matter what. Java ignores indentation."
+  },
+  {
+    id: "b37", obj: "3.1", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int a = 5, b = 10;
+if (a > 7)
+    if (b > 7)
+        System.out.println("X");
+else
+    System.out.println("Y");
+System.out.println("Z");`,
+    answer: "Z",
+    why: "Dangling else: an `else` always pairs with the NEAREST unmatched `if` (the inner `if (b > 7)`), regardless of indentation. Since `a > 7` is false, the whole inner if/else is skipped and only `Z` prints."
+  },
+  {
+    id: "b38", obj: "3.1", type: "mc",
+    q: "What is the result of compiling and running the following code segment?",
+    code: String.raw`int x = 4;
+if (x = 5) {
+    System.out.println("five");
+}`,
+    options: ["Compilation error: `int` cannot be converted to `boolean`", "`five` is printed", "Nothing is printed", "A runtime exception is thrown"],
+    answer: 0,
+    why: "`=` is assignment, `==` is comparison. `x = 5` produces an `int`, and an `if` condition must be a `boolean`, so it does not compile. (With a `boolean` variable, `if (flag = true)` WOULD compile, which is a sneaky logic bug.)"
+  },
+  {
+    id: "b39", obj: "3.1", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int day = 2;
+switch (day) {
+    case 1: System.out.print("Mon ");
+    case 2: System.out.print("Tue ");
+    case 3: System.out.print("Wed ");
+        break;
+    case 4: System.out.print("Thu ");
+    default: System.out.print("Other");
+}`,
+    answer: "Tue Wed",
+    why: "Execution jumps to `case 2` and then FALLS THROUGH into `case 3` because there is no `break` after `Tue`. The `break` after `Wed` stops it."
+  },
+  {
+    id: "b40", obj: "3.1", type: "mc",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int n = 7;
+switch (n) {
+    case 1: System.out.print("one ");
+    default: System.out.print("def ");
+    case 2: System.out.print("two ");
+        break;
+    case 3: System.out.print("three ");
+}`,
+    options: ["`def two`", "`def`", "`one def two`", "Compilation error: `default` must be the last label"],
+    answer: 0,
+    why: "`default` can appear anywhere in a switch. No case matches 7, so execution starts at `default`, prints `def `, then falls through into `case 2` and prints `two ` before the `break`."
+  },
+  {
+    id: "b41", obj: "3.1", type: "mc",
+    q: "What is the output of the following code segment?",
+    code: String.raw`String cmd = "Stop";
+switch (cmd) {
+    case "stop": System.out.println("Halting"); break;
+    case "go": System.out.println("Going"); break;
+    default: System.out.println("Unknown");
+}`,
+    options: ["`Unknown`", "`Halting`", "`Going`", "Compilation error: you cannot switch on a `String`"],
+    answer: 0,
+    why: "Switching on a String is legal (Java 7+), but matching uses `equals`, which is case-sensitive. `\"Stop\"` does not equal `\"stop\"`, so `default` runs."
+  },
+  {
+    id: "b42", obj: "3.1", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int count = 0;
+int x = 0;
+if (x != 0 && 10 / x > 1) {
+    count++;
+}
+if (x == 0 || ++count > 5) {
+    count += 10;
+}
+System.out.println(count);`,
+    answer: "10",
+    why: "Short-circuit: `&&` stops when the left side is false, so `10 / x` never runs (no divide-by-zero). `||` stops when the left side is true, so `++count` never runs. Only `count += 10` executes."
+  },
+  {
+    id: "b43", obj: "3.1", type: "mc",
+    q: "What happens when the following code segment runs?",
+    code: String.raw`int x = 0;
+if (x != 0 & 10 / x > 1) {
+    System.out.println("yes");
+} else {
+    System.out.println("no");
+}`,
+    options: ["An `ArithmeticException` is thrown", "`no` is printed", "`yes` is printed", "The code does not compile"],
+    answer: 0,
+    why: "A single `&` is NOT short-circuit: both sides are always evaluated. So `10 / x` runs with `x == 0`, and integer division by zero throws `ArithmeticException`. With `&&` it would print `no`."
+  },
+  {
+    id: "b44", obj: "3.1", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int t = 72;
+String s = t > 80 ? "hot" : t > 60 ? "warm" : "cold";
+boolean r = !(t > 70) || t < 75 && t % 2 == 1;
+System.out.println(s + " " + r);`,
+    answer: "warm false",
+    why: "Ternary: 72 > 80 is false, so check 72 > 60 → `warm`. For `r`, `&&` binds tighter than `||`: `!(true)` is false, and `(t < 75 && t % 2 == 1)` is `true && false` = false, so `false || false` = false."
+  },
+  {
+    id: "b45", obj: "3.1", type: "yn",
+    q: "For each statement, select Yes if the statement is true. Otherwise, select No.",
+    statements: [
+      "A `case` label can use a regular (non-final) variable, such as `case limit:`.",
+      "If a `case` has no `break`, execution continues into the next case.",
+      "If `flag` is a `boolean` variable, `if (flag = true)` compiles."
+    ],
+    answer: [false, true, true],
+    why: "Case labels must be compile-time constants (literals or `final` constants). Missing `break` causes fall-through. `flag = true` assigns true and evaluates to a boolean, so it compiles (and is always true, a classic logic bug)."
+  },
+  {
+    id: "b46", obj: "3.1", type: "mc",
+    q: "What is the output of the following code segment?",
+    code: String.raw`double a = 0.1 + 0.2;
+if (a == 0.3) {
+    System.out.println("equal");
+} else {
+    System.out.println("not equal");
+}`,
+    options: ["`not equal`", "`equal`", "`0.3`", "The code does not compile"],
+    answer: 0,
+    why: "Floating-point values are approximations: `0.1 + 0.2` is actually `0.30000000000000004`. Comparing doubles with `==` is unreliable; compare the difference to a small tolerance instead."
+  },
+  {
+    id: "b47", obj: "3.1", type: "multi",
+    q: "You need to print `Valid` only when `age` is between 18 and 65, inclusive. Which two conditions should you use? (Choose two.)",
+    options: [
+      "`if (age >= 18 && age <= 65)`",
+      "`if (!(age < 18 || age > 65))`",
+      "`if (18 <= age <= 65)`",
+      "`if (age >= 18 || age <= 65)`",
+      "`if (age > 18 && age < 65)`"
+    ],
+    answer: [0, 1],
+    why: "Both correct options say the same thing (De Morgan's law). `18 <= age <= 65` does not compile in Java (you can't compare a boolean to an int). The `||` version is true for every age. `>`/`<` exclude 18 and 65, which the word inclusive forbids."
+  },
+
+  // ---------- 3.2 Loops ----------
+  {
+    id: "b48", obj: "3.2", type: "mc",
+    q: "How many times does the body of the following loop run?",
+    code: String.raw`int count = 0;
+for (int i = 3; i <= 15; i += 3) {
+    count++;
+}`,
+    options: ["5", "4", "6", "15"],
+    answer: 0,
+    why: "`i` takes the values 3, 6, 9, 12, 15 (15 is included because of `<=`). That's 5 passes. With `<` it would be 4."
+  },
+  {
+    id: "b49", obj: "3.2", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int n = 10;
+do {
+    System.out.print(n + " ");
+    n++;
+} while (n < 5);
+System.out.print(n);`,
+    answer: "10 11",
+    why: "A `do-while` checks its condition AFTER the body, so the body always runs at least once even though `10 < 5` is false. It prints `10 `, increments to 11, then stops."
+  },
+  {
+    id: "b50", obj: "3.2", type: "mc",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int i = 1;
+int steps = 0;
+while (i < 100) {
+    i *= 3;
+    steps++;
+}
+System.out.println(steps + " " + i);`,
+    options: ["`5 243`", "`4 81`", "`5 81`", "`4 243`"],
+    answer: 0,
+    why: "i goes 1 → 3 → 9 → 27 → 81 → 243 (5 steps). At 81 the condition `81 < 100` is still true, so the loop runs once more and `i` ends at 243."
+  },
+  {
+    id: "b51", obj: "3.2", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`for (int i = 1; i <= 10; i++) {
+    if (i % 3 == 0) continue;
+    if (i == 8) break;
+    System.out.print(i + " ");
+}`,
+    answer: "1 2 4 5 7",
+    why: "`continue` skips the rest of the current pass (3 and 6 are skipped). `break` ends the whole loop, so when `i` reaches 8 nothing else prints."
+  },
+  {
+    id: "b52", obj: "3.2", type: "mc",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int total = 0;
+for (int r = 0; r < 4; r++) {
+    for (int c = r; c < 4; c++) {
+        total++;
+    }
+}
+System.out.println(total);`,
+    options: ["`10`", "`16`", "`6`", "`12`"],
+    answer: 0,
+    why: "The inner loop starts at `r`, so it runs 4, then 3, then 2, then 1 times: 4 + 3 + 2 + 1 = 10. It would be 16 only if the inner loop always started at 0."
+  },
+  {
+    id: "b53", obj: "3.2", type: "type",
+    q: "What is the output? (Type each line on its own line.)",
+    code: String.raw`for (int i = 1; i <= 3; i++) {
+    for (int j = 1; j <= i; j++) {
+        System.out.print(i * j);
+    }
+    System.out.println();
+}`,
+    answer: "1\n24\n369",
+    why: "Row `i` prints `i * j` for j = 1..i with no spaces: row 1 → `1`; row 2 → `2` `4`; row 3 → `3` `6` `9`. `println()` after the inner loop ends each line."
+  },
+  {
+    id: "b54", obj: "3.2", type: "mc",
+    q: "Which code segment results in an infinite loop?",
+    options: [
+      "`int i = 0; while (i < 5) { System.out.print(i); }`",
+      "`for (int i = 0; i < 5; i++) { System.out.print(i); }`",
+      "`int i = 5; do { i--; } while (i > 0);`",
+      "`int i = 0; while (i < 5) i += 2;`"
+    ],
+    answer: 0,
+    why: "In the first option nothing inside the loop changes `i`, so `i < 5` stays true forever. The others all move `i` toward ending the loop."
+  },
+  {
+    id: "b55", obj: "3.2", type: "mc",
+    q: "What is the result of compiling and running the following code segment?",
+    code: String.raw`for (int i = 0; i < 5; i++) {
+    System.out.print(i);
+}
+System.out.println(i);`,
+    options: ["Compilation error", "`012345`", "`01234`", "`012344`"],
+    answer: 0,
+    why: "A variable declared in the `for` header only exists inside the loop. Using `i` after the loop is a compile error (cannot find symbol). Declare `int i;` before the loop if you need it afterward."
+  },
+  {
+    id: "b56", obj: "3.2", type: "type",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int i;
+int sum = 0;
+for (i = 10; i > 2; i -= 3) {
+    sum += i;
+}
+System.out.println(i + " " + sum);`,
+    answer: "1 21",
+    why: "Here `i` is declared outside, so it survives the loop. The body runs for i = 10, 7, 4 (sum = 21). Then `i` becomes 1, `1 > 2` is false, and the loop ends with `i` = 1."
+  },
+  {
+    id: "b57", obj: "3.2", type: "type",
+    q: "Assume `java.util.ArrayList` is imported. What is the output?",
+    code: String.raw`ArrayList<String> words = new ArrayList<>();
+words.add("tree"); words.add("a"); words.add("forest"); words.add("oak");
+String longest = "";
+for (String w : words) {
+    if (w.length() > longest.length()) {
+        longest = w;
+    }
+}
+System.out.println(longest + longest.length());`,
+    answer: "forest6",
+    why: "A for-each loop visits each list element in order, keeping the longest seen so far: tree (4) → forest (6). `oak` is shorter. The output joins the word and its length with no space."
+  },
+  {
+    id: "b58", obj: "3.2", type: "multi",
+    q: "You need to print `5 4 3 2 1` (each number followed by a space). Which two code segments should you use? (Choose two.)",
+    options: [
+      "`for (int i = 5; i > 0; i--) System.out.print(i + \" \");`",
+      "`int i = 5; while (i > 0) { System.out.print(i + \" \"); i--; }`",
+      "`for (int i = 5; i >= 0; i--) System.out.print(i + \" \");`",
+      "`int i = 5; while (i > 0) { i--; System.out.print(i + \" \"); }`",
+      "`for (int i = 5; i > 0; i++) System.out.print(i + \" \");`"
+    ],
+    answer: [0, 1],
+    why: "`>= 0` also prints 0. Decrementing BEFORE printing prints `4 3 2 1 0`. `i++` moves away from the stop condition and loops (nearly) forever."
+  },
+  {
+    id: "b59", obj: "3.2", type: "yn",
+    q: "For each statement, select Yes if the statement is true. Otherwise, select No.",
+    statements: [
+      "A `do-while` loop always executes its body at least once.",
+      "`continue` immediately exits the loop entirely.",
+      "A for-each loop can iterate over an `ArrayList`."
+    ],
+    answer: [true, false, true],
+    why: "The `do-while` condition is checked after the body. `continue` only skips to the NEXT iteration; `break` exits the loop. For-each works on arrays and on collections like `ArrayList`."
+  },
+  {
+    id: "b60", obj: "3.2", type: "mc",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int n = 4096;
+int digits = 0;
+int sum = 0;
+while (n > 0) {
+    sum += n % 10;
+    n /= 10;
+    digits++;
+}
+System.out.println(digits + " " + sum);`,
+    options: ["`4 19`", "`3 19`", "`4 4096`", "`4 13`"],
+    answer: 0,
+    why: "`n % 10` grabs the last digit and `n /= 10` (integer division) drops it: 6, 9, 0, 4 → sum 19 over 4 passes. The loop stops when `n` becomes 0."
+  },
+  {
+    id: "b61", obj: "3.2", type: "mc",
+    q: "What is the output of the following code segment?",
+    code: String.raw`int count = 0;
+for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 5; j++) {
+        if (j == 2) break;
+        count++;
+    }
+}
+System.out.println(count);`,
+    options: ["`6`", "`2`", "`15`", "`9`"],
+    answer: 0,
+    why: "`break` exits only the INNERMOST loop. Each of the 3 outer passes counts j = 0 and j = 1, then breaks: 3 × 2 = 6."
+  },
+  {
+    id: "b62", obj: "3.2", type: "mc",
+    q: "You need to add up the values in `int[] values`, skipping any negative numbers. `sum` is already declared and set to 0. Which code segment should you use?",
+    options: [
+      "`for (int v : values) { if (v < 0) continue; sum += v; }`",
+      "`for (int v : values) { if (v < 0) break; sum += v; }`",
+      "`for (int i = 1; i <= values.length; i++) { if (values[i] >= 0) sum += values[i]; }`",
+      "`for (int v : values) { if (v < 0) sum += v; }`"
+    ],
+    answer: 0,
+    why: "`continue` skips just the negative value and keeps going. `break` would stop at the first negative. Starting at 1 and using `<=` skips index 0 and goes out of bounds. The last option adds ONLY the negatives."
+  }
+]);
+
+window.QB = (window.QB || []).concat([
+  // ---------- 4.1 Class definitions ----------
+  {
+    id: "c01", obj: "4.1", type: "mc",
+    q: "You create the following class and then run the statement shown in `main`. What is the result?",
+    code: String.raw`public class Car {
+    private String model;
+
+    public void Car(String m) {
+        model = m;
+    }
+}
+
+// in main:
+Car c = new Car("Civic");`,
+    options: [
+      "Compilation fails because no constructor of `Car` accepts a `String`",
+      "A `Car` object is created with `model` set to `\"Civic\"`",
+      "It compiles, but `model` stays `null`",
+      "It compiles, but throws a `NullPointerException` at runtime"
+    ],
+    answer: 0,
+    why: "A constructor has NO return type. `public void Car(String m)` is an ordinary method that happens to share the class name, so the only constructor is the default no-arg one, and `new Car(\"Civic\")` doesn't compile."
+  },
+  {
+    id: "c02", obj: "4.1", type: "mc",
+    q: "Given the class below, what happens when `main` runs `Book b = new Book();`?",
+    code: String.raw`public class Book {
+    private String title;
+
+    public Book(String title) {
+        this.title = title;
+    }
+}`,
+    options: [
+      "Compilation fails because `Book` has no no-argument constructor",
+      "`b.title` is `null`",
+      "`b.title` is an empty string `\"\"`",
+      "A runtime exception is thrown"
+    ],
+    answer: 0,
+    why: "Java only supplies the free default constructor when you write NO constructors. Once you write `Book(String)`, `new Book()` is a compile error unless you also write `Book()` yourself."
+  },
+  {
+    id: "c03", obj: "4.1", type: "type",
+    q: "What is the output?",
+    code: String.raw`class Player {
+    private int score;
+
+    public Player(int score) {
+        score = score;
+    }
+
+    public int getScore() { return score; }
+}
+
+// in main:
+Player p = new Player(25);
+System.out.println(p.getScore());`,
+    answer: "0",
+    why: "Inside the constructor, `score` means the PARAMETER (it shadows the field), so `score = score;` assigns the parameter to itself. The field keeps its default `0`. Fix: `this.score = score;`."
+  },
+  {
+    id: "c04", obj: "4.1", type: "mc",
+    q: "You are writing a constructor for a class named `Customer`. The constructor has a parameter named `name` and the class has a field named `name`. You need to store the parameter in the field. Which statement should you use?",
+    options: [
+      "`this.name = name;`",
+      "`name = this.name;`",
+      "`name = name;`",
+      "`this(name);`"
+    ],
+    answer: 0,
+    why: "`this.name` is the field; plain `name` is the parameter. `name = this.name` copies the wrong direction, `name = name` does nothing, and `this(name)` calls another constructor."
+  },
+  {
+    id: "c05", obj: "4.1", type: "type",
+    q: "What is the output?",
+    code: String.raw`class Box {
+    int w, h;
+    Box() {
+        this(3);
+        System.out.print("A");
+    }
+    Box(int s) {
+        this(s, s * 2);
+        System.out.print("B");
+    }
+    Box(int w, int h) {
+        this.w = w;
+        this.h = h;
+        System.out.print("C");
+    }
+}
+
+// in main:
+Box b = new Box();
+System.out.println(" " + (b.w * b.h));`,
+    answer: "CBA 18",
+    why: "`this(...)` runs the other constructor FIRST, then control returns. `Box()` → `Box(3)` → `Box(3, 6)` prints C, then back in `Box(int)` prints B, then back in `Box()` prints A. 3 × 6 = 18."
+  },
+  {
+    id: "c06", obj: "4.1", type: "mc",
+    q: "What is the result of compiling this constructor?",
+    code: String.raw`public Box(int s) {
+    System.out.println("Creating box");
+    this(s, s);
+}`,
+    options: [
+      "Compilation fails because the call to `this(...)` must be the first statement",
+      "It compiles and prints `Creating box`, then calls `Box(int, int)`",
+      "It compiles, but `this(s, s)` is ignored",
+      "It compiles, but throws an exception at runtime"
+    ],
+    answer: 0,
+    why: "Under the Java rules the exam tests, `this(...)` and `super(...)` must be the FIRST statement in a constructor. Anything before it is a compile error."
+  },
+  {
+    id: "c07", obj: "4.1", type: "mc",
+    q: "A file named `Shapes.java` contains the code below. What happens when you run `javac Shapes.java`?",
+    code: String.raw`public class Circle {
+}
+
+class Square {
+}`,
+    options: [
+      "Compilation fails: public class `Circle` must be declared in a file named `Circle.java`",
+      "It compiles and creates `Shapes.class`",
+      "It compiles and creates `Circle.class` and `Square.class`",
+      "Compilation fails because a file can contain only one class"
+    ],
+    answer: 0,
+    why: "A public top-level class must live in a file with exactly its name. A file CAN hold several classes, but only one may be public, and the file name must match it."
+  },
+  {
+    id: "c08", obj: "4.1", type: "multi",
+    q: "Which two statements about Java source files are true? (Choose two.)",
+    options: [
+      "A source file can contain at most one `public` top-level class.",
+      "If a source file contains a `public` class, the file name must match that class name.",
+      "A source file must contain exactly one class.",
+      "The file name must always match the class that contains `main`.",
+      "File names are not case-sensitive, so `account.java` can hold `public class Account`."
+    ],
+    answer: [0, 1],
+    why: "One public class per file, and the file is named after it (case-sensitive). Extra non-public classes are allowed, and `main` can be in any class."
+  },
+  {
+    id: "c09", obj: "4.1", type: "type",
+    q: "What is the output?",
+    code: String.raw`class Animal {
+    String sound() { return "..."; }
+    String speak() { return "Animal says " + sound(); }
+}
+
+class Dog extends Animal {
+    @Override
+    String sound() { return "Woof"; }
+}
+
+// in main:
+Animal a = new Dog();
+System.out.println(a.speak());`,
+    answer: "Animal says Woof",
+    why: "The object is really a `Dog`, so the overridden `sound()` runs, even though it's called from inside `Animal.speak()` through an `Animal` reference. The object type picks the overridden method, not the variable type."
+  },
+  {
+    id: "c10", obj: "4.1", type: "type",
+    q: "What is the output?",
+    code: String.raw`class Vehicle {
+    Vehicle() { System.out.print("V"); }
+}
+
+class Truck extends Vehicle {
+    Truck() { System.out.print("T"); }
+    Truck(int axles) {
+        this();
+        System.out.print(axles);
+    }
+}
+
+// in main:
+new Truck(3);`,
+    answer: "VT3",
+    why: "`Truck(3)` calls `this()` first. `Truck()` has an invisible `super()` as its first line, so `Vehicle()` prints V, then T, then back in `Truck(int)` prints 3. The parent constructor always finishes first."
+  },
+  {
+    id: "c11", obj: "4.1", type: "mc",
+    q: "What is the result of compiling this code?",
+    code: String.raw`class Account {
+    private double balance = 100;
+}
+
+class Savings extends Account {
+    void addInterest() {
+        balance = balance * 1.05;
+    }
+}`,
+    options: [
+      "Compilation fails because `balance` has private access in `Account`",
+      "It compiles, and `addInterest()` sets `balance` to `105.0`",
+      "It compiles, but `balance` is unchanged",
+      "It compiles, but throws an exception at runtime"
+    ],
+    answer: 0,
+    why: "`private` members aren't accessible in subclasses. `Savings` would need `protected` access or a public/protected getter and setter in `Account`."
+  },
+  {
+    id: "c12", obj: "4.1", type: "mc",
+    q: "Class `Animal` declares `public String describe(int level)`. Class `Dog extends Animal`. Which method in `Dog` OVERRIDES it?",
+    options: [
+      "`public String describe(int lvl)`",
+      "`public String describe(double level)`",
+      "`public void describe(int level)`",
+      "`public String Describe(int level)`"
+    ],
+    answer: 0,
+    why: "Overriding needs the same name and parameter types (parameter NAMES don't matter) and a compatible return type. `double` makes it an overload, `void` is a compile error (incompatible return type), and `Describe` is a different name because Java is case-sensitive."
+  },
+  {
+    id: "c13", obj: "4.1", type: "yn",
+    q: "For each statement, select Yes if it is true, or No if it is false.",
+    statements: [
+      "Every class in Java directly or indirectly extends `Object`.",
+      "A constructor must declare a return type of `void`.",
+      "If a subclass constructor does not call `super(...)` or `this(...)`, Java automatically calls the superclass's no-argument constructor."
+    ],
+    answer: [true, false, true],
+    why: "`Object` is the root of every class. Constructors have NO return type, not even `void`. The compiler inserts `super();` when you don't write it."
+  },
+
+  // ---------- 4.2 Data fields ----------
+  {
+    id: "c14", obj: "4.2", type: "mc",
+    q: "You are creating a class named `Employee`. The `salary` field must be accessible ONLY from code inside the `Employee` class. Which access modifier should you use?",
+    options: ["`private`", "`protected`", "`public`", "No modifier (package-private)"],
+    answer: 0,
+    why: "`private` = this class only. No modifier = same package. `protected` = same package plus subclasses. `public` = everyone."
+  },
+  {
+    id: "c15", obj: "4.2", type: "yn",
+    q: "For each statement, select Yes if it is true, or No if it is false.",
+    statements: [
+      "A `protected` field can be accessed by a subclass in a different package.",
+      "A field with no access modifier can be accessed by any class in the same package.",
+      "A `private` field can be accessed directly by a subclass."
+    ],
+    answer: [true, true, false],
+    why: "Least to most open: private (class) → default (package) → protected (package + subclasses anywhere) → public (everyone). Subclasses never see `private` members directly."
+  },
+  {
+    id: "c16", obj: "4.2", type: "type",
+    q: "What is the output?",
+    code: String.raw`class Ticket {
+    static int count = 0;
+    int id;
+
+    Ticket() {
+        count++;
+        id = count;
+    }
+}
+
+// in main:
+Ticket t1 = new Ticket();
+Ticket t2 = new Ticket();
+Ticket t3 = new Ticket();
+System.out.println(t1.id + " " + t3.id + " " + Ticket.count);`,
+    answer: "1 3 3",
+    why: "`count` is `static`, so all objects share one copy that reaches 3. Each object's own `id` is a snapshot taken when it was built: t1 got 1, t3 got 3."
+  },
+  {
+    id: "c17", obj: "4.2", type: "type",
+    q: "What is the output?",
+    code: String.raw`class Counter {
+    static int shared = 0;
+    int own = 0;
+
+    void hit() {
+        shared++;
+        own++;
+    }
+}
+
+// in main:
+Counter a = new Counter();
+Counter b = new Counter();
+a.hit();
+a.hit();
+b.hit();
+System.out.println(a.own + "," + b.own + "," + a.shared);`,
+    answer: "2,1,3",
+    why: "Each object has its own `own` (a: 2, b: 1). There's only one `shared` for the whole class, and it counts all three calls, no matter which reference you read it through."
+  },
+  {
+    id: "c18", obj: "4.2", type: "mc",
+    q: "What is the result?",
+    code: String.raw`public class Config {
+    public static final int MAX_USERS = 50;
+
+    public static void main(String[] args) {
+        MAX_USERS = MAX_USERS + 10;
+        System.out.println(MAX_USERS);
+    }
+}`,
+    options: [
+      "Compilation fails",
+      "`60`",
+      "`50`",
+      "A runtime exception is thrown"
+    ],
+    answer: 0,
+    why: "A `final` variable can be assigned only once. Reassigning it is a COMPILE error (\"cannot assign a value to final variable\"), not a runtime error."
+  },
+  {
+    id: "c19", obj: "4.2", type: "mc",
+    q: "You need a tax rate constant that is shared by all instances of a class, can never change, and follows Java naming conventions. Which declaration should you use?",
+    options: [
+      "`public static final double TAX_RATE = 0.07;`",
+      "`public final double taxRate = 0.07;`",
+      "`public static double TAX_RATE = 0.07;`",
+      "`public final static double taxRate;`"
+    ],
+    answer: 0,
+    why: "`static` = shared by all instances, `final` = can't change, ALL_CAPS_WITH_UNDERSCORES = constant naming convention. The others are missing `static` or `final`, or use the wrong naming."
+  },
+  {
+    id: "c20", obj: "4.2", type: "multi",
+    q: "You are creating a class named `Student` with a field `gpa`. Other classes must be able to read `gpa`, but may change it only through a method that rejects values outside 0.0–4.0. Which three actions should you perform? (Choose three.)",
+    options: [
+      "Declare `gpa` as `private`.",
+      "Create a `public double getGpa()` method that returns `gpa`.",
+      "Create a `public void setGpa(double g)` method that checks the range before assigning.",
+      "Declare `gpa` as `public`.",
+      "Declare `gpa` as `final`."
+    ],
+    answer: [0, 1, 2],
+    why: "That's encapsulation: a private field, a public getter to read it, and a public setter that validates. `public` would let anyone bypass the check, and `final` would stop the setter from ever changing it."
+  },
+  {
+    id: "c21", obj: "4.2", type: "type",
+    q: "What is the output?",
+    code: String.raw`class Item {
+    int qty;
+    double price;
+    boolean sold;
+    String name;
+}
+
+// in main:
+Item it = new Item();
+System.out.println(it.qty + " " + it.price + " " + it.sold + " " + it.name);`,
+    answer: "0 0.0 false null",
+    why: "FIELDS get default values: numbers 0 / 0.0, boolean `false`, char `'\\u0000'`, objects (including String) `null`. LOCAL variables get no defaults, and using one before you assign it is a compile error."
+  },
+  {
+    id: "c22", obj: "4.2", type: "mc",
+    q: "Class `Bank` declares `public static double rate;`. From another class, you need to set the rate to 0.03 WITHOUT creating a `Bank` object. Which statement should you use?",
+    options: [
+      "`Bank.rate = 0.03;`",
+      "`Bank b; b.rate = 0.03;`",
+      "`this.rate = 0.03;`",
+      "`new Bank.rate = 0.03;`"
+    ],
+    answer: 0,
+    why: "Static members belong to the class, so use `ClassName.member`. `Bank b; b.rate` fails because `b` was never initialized, and there's no `this` in another class's context."
+  },
+
+  // ---------- 4.3 Methods ----------
+  {
+    id: "c23", obj: "4.3", type: "mc",
+    q: "The method below does not compile. You need it to send the doubled value back to the caller. What should you change?",
+    code: String.raw`public static void doubleIt(int n) {
+    return n * 2;
+}`,
+    options: [
+      "Change `void` to `int`",
+      "Remove the `return` keyword",
+      "Change `return n * 2;` to `n = n * 2;`",
+      "Remove the `static` keyword"
+    ],
+    answer: 0,
+    why: "A `void` method can't return a value (\"unexpected return value\"). The return type must match what's returned. Changing `n` inside the method wouldn't affect the caller."
+  },
+  {
+    id: "c24", obj: "4.3", type: "mc",
+    q: "What is the result of compiling this method?",
+    code: String.raw`public static String grade(int score) {
+    if (score >= 90) {
+        return "A";
+    } else if (score >= 80) {
+        return "B";
+    }
+}`,
+    options: [
+      "Compilation fails with a \"missing return statement\" error",
+      "It compiles and returns `null` for scores below 80",
+      "It compiles and returns `\"\"` for scores below 80",
+      "It compiles, but throws an exception for scores below 80"
+    ],
+    answer: 0,
+    why: "Every path through a non-void method must return a value. A score of 70 matches neither branch, so javac rejects it. Add a final `return \"C\";` or an `else`."
+  },
+  {
+    id: "c25", obj: "4.3", type: "type",
+    q: "What is the output?",
+    code: String.raw`static void bump(int x) {
+    x = x + 10;
+    System.out.print(x + " ");
+}
+
+// in main:
+int n = 5;
+bump(n);
+System.out.println(n);`,
+    answer: "15 5",
+    why: "Java is pass-by-value. `bump` gets a COPY of 5 and changes only its copy, so `n` in main is still 5."
+  },
+  {
+    id: "c26", obj: "4.3", type: "type",
+    q: "What is the output?",
+    code: String.raw`static void change(int[] arr) {
+    arr[0] = 99;
+    arr = new int[] {7, 7, 7};
+    arr[1] = 42;
+}
+
+// in main:
+int[] data = {1, 2, 3};
+change(data);
+System.out.println(data[0] + " " + data[1]);`,
+    answer: "99 2",
+    why: "The method gets a copy of the REFERENCE. `arr[0] = 99` changes the shared array. After `arr = new int[]...`, `arr` points to a different array, so `arr[1] = 42` never touches `data`."
+  },
+  {
+    id: "c27", obj: "4.3", type: "type",
+    q: "What is the output?",
+    code: String.raw`static void edit(StringBuilder sb, String s) {
+    sb.append("!");
+    s = s + "!";
+}
+
+// in main:
+StringBuilder a = new StringBuilder("hi");
+String b = "hi";
+edit(a, b);
+System.out.println(a + " " + b);`,
+    answer: "hi! hi",
+    why: "`StringBuilder` is mutable, so `append` changes the caller's object. `String` is immutable: `s + \"!\"` makes a NEW string and points only the local `s` at it."
+  },
+  {
+    id: "c28", obj: "4.3", type: "mc",
+    q: "What is the result?",
+    code: String.raw`public class Game {
+    int lives = 3;
+
+    public static void main(String[] args) {
+        lives--;
+        System.out.println(lives);
+    }
+}`,
+    options: [
+      "Compilation fails",
+      "`2`",
+      "`3`",
+      "A runtime exception is thrown"
+    ],
+    answer: 0,
+    why: "`main` is `static`, so it has no object and can't reach the instance field `lives` (\"non-static variable cannot be referenced from a static context\"). Create a `Game` object first, or make `lives` static."
+  },
+  {
+    id: "c29", obj: "4.3", type: "mc",
+    q: "Class `Game` has an instance method `public void play()`. You need to call `play()` from `public static void main(String[] args)` in the same class. Which code should you use?",
+    options: [
+      "`Game g = new Game(); g.play();`",
+      "`play();`",
+      "`Game.play();`",
+      "`this.play();`"
+    ],
+    answer: 0,
+    why: "Instance methods need an object. In a static method there's no `this`, so `play()` and `this.play()` don't compile, and `Game.play()` only works for static methods."
+  },
+  {
+    id: "c30", obj: "4.3", type: "type",
+    q: "What is the output?",
+    code: String.raw`static String f(int x)    { return "int"; }
+static String f(long x)   { return "long"; }
+static String f(double x) { return "double"; }
+
+// in main:
+System.out.println(f(5) + " " + f(5L) + " " + f(5.0f) + " " + f('A'));`,
+    answer: "int long double int",
+    why: "Java picks the closest match by widening. `5` → int, `5L` → long, `5.0f` (float) widens to double, `'A'` (char) widens to int. There's no exact float or char version, so it takes the nearest wider type."
+  },
+  {
+    id: "c31", obj: "4.3", type: "mc",
+    q: "A class contains both of these methods. What is the result?",
+    code: String.raw`public int calc(int a) { return a * 2; }
+public double calc(int a) { return a * 2.5; }`,
+    options: [
+      "Compilation fails because `calc(int)` is already defined",
+      "It compiles; this is valid overloading",
+      "It compiles; the second method overrides the first",
+      "It compiles; the compiler picks the method based on the variable the result is stored in"
+    ],
+    answer: 0,
+    why: "Overloads must differ in their PARAMETER LIST (number, type, or order of types). A different return type alone isn't enough."
+  },
+  {
+    id: "c32", obj: "4.3", type: "multi",
+    q: "Class `Shape` contains `public double area(double r)`. Which two methods can be added to `Shape` as valid overloads? (Choose two.)",
+    options: [
+      "`public double area(double w, double h)`",
+      "`public double area(int side)`",
+      "`public int area(double r)`",
+      "`private double area(double radius)`",
+      "`public static double area(double x)`"
+    ],
+    answer: [0, 1],
+    why: "Only a different parameter list makes an overload. Changing just the return type, the access modifier, `static`, or the parameter NAME gives a duplicate method, which is a compile error."
+  },
+
+  // ---------- 4.4 Objects ----------
+  {
+    id: "c33", obj: "4.4", type: "type",
+    q: "What is the output?",
+    code: String.raw`class Pt {
+    int x;
+    Pt(int x) { this.x = x; }
+}
+
+// in main:
+Pt a = new Pt(4);
+Pt b = a;
+b.x = 10;
+a = new Pt(1);
+System.out.println(a.x + " " + b.x);`,
+    answer: "1 10",
+    why: "`b = a` copies the reference, so both point at ONE object, and `b.x = 10` changes it. Then `a` is pointed at a brand-new Pt(1), while `b` still points at the old object with x = 10."
+  },
+  {
+    id: "c34", obj: "4.4", type: "type",
+    q: "What is the output?",
+    code: String.raw`class Pt {
+    int x;
+    Pt(int x) { this.x = x; }
+}
+
+// in main:
+Pt p = new Pt(2);
+Pt q = new Pt(2);
+Pt r = p;
+System.out.println((p == q) + " " + (p == r));`,
+    answer: "false true",
+    why: "`==` on objects compares REFERENCES (same object?), not contents. `p` and `q` are two separate objects with equal data, so the result is false. `r` refers to the same object as `p`, so the result is true."
+  },
+  {
+    id: "c35", obj: "4.4", type: "mc",
+    q: "What is the result?",
+    code: String.raw`class Robot {
+    String name;
+
+    void hello() {
+        System.out.println("Hi " + name.toUpperCase());
+    }
+}
+
+// in main:
+Robot r = new Robot();
+r.hello();`,
+    options: [
+      "A `NullPointerException` is thrown at runtime",
+      "`Hi NULL`",
+      "`Hi null`",
+      "Compilation fails because `name` is not initialized"
+    ],
+    answer: 0,
+    why: "The field `name` defaults to `null` (fields get defaults, so it compiles). Calling a method on `null` (`.toUpperCase()`) throws a NullPointerException. Plain `\"Hi \" + name` would print `Hi null`."
+  },
+  {
+    id: "c36", obj: "4.4", type: "mc",
+    q: "At line X, which object(s) are eligible for garbage collection?",
+    code: String.raw`Phone p1 = new Phone();   // object A
+Phone p2 = new Phone();   // object B
+p1 = p2;
+p2 = null;
+// line X`,
+    options: [
+      "Only object A",
+      "Only object B",
+      "Both A and B",
+      "Neither object"
+    ],
+    answer: 0,
+    why: "After `p1 = p2`, nothing refers to A anymore, so A is eligible. `p2 = null` only clears one of B's two references, and `p1` still points to B."
+  },
+  {
+    id: "c37", obj: "4.4", type: "yn",
+    q: "For each statement about garbage collection, select Yes if it is true, or No if it is false.",
+    statements: [
+      "Calling `System.gc()` guarantees that garbage collection runs immediately.",
+      "An object becomes eligible for garbage collection when no reference variable refers to it.",
+      "A Java program must explicitly free an object's memory when it is finished with it."
+    ],
+    answer: [false, true, false],
+    why: "The JVM manages memory automatically. `System.gc()` is only a REQUEST that the JVM may ignore. Objects with no remaining references become eligible for collection."
+  },
+  {
+    id: "c38", obj: "4.4", type: "type",
+    q: "What is the output?",
+    code: String.raw`class Pet {
+    String name;
+    Pet(String n) { name = n; }
+
+    public String toString() {
+        return "Pet[" + name + "]";
+    }
+}
+
+// in main:
+Pet p = new Pet("Rex");
+System.out.println(p);
+System.out.println("My " + p);`,
+    answer: "Pet[Rex]\nMy Pet[Rex]",
+    why: "Printing an object, or concatenating it with a String, calls its `toString()` automatically. Because `Pet` overrides `toString()`, you get the custom text."
+  },
+  {
+    id: "c39", obj: "4.4", type: "mc",
+    q: "Class `Lamp` does NOT override `toString()`. What does `System.out.println(new Lamp());` print?",
+    options: [
+      "Something like `Lamp@7229724f` (the class name, `@`, and a hex hash code)",
+      "An empty line",
+      "The values of all of `Lamp`'s fields",
+      "Nothing; compilation fails because `Lamp` has no `toString()`"
+    ],
+    answer: 0,
+    why: "Every class inherits `toString()` from `Object`, which returns ClassName@hashcode. It always compiles."
+  },
+
+  // ---------- 5.1 Debugging ----------
+  {
+    id: "c40", obj: "5.1", type: "yn",
+    q: "For each line of code, select Yes if it causes a COMPILE-TIME (syntax) error, or No if it does not.",
+    statements: [
+      "`int count = 4.0;`",
+      "`int result = 10 / 0;`",
+      "`String s = null; int n = s.length();`"
+    ],
+    answer: [true, false, false],
+    why: "`int = double` is a compile error (possible lossy conversion; it needs a cast). `10 / 0` compiles fine and throws ArithmeticException at RUNTIME. Calling a method on `null` compiles fine and throws NullPointerException at RUNTIME."
+  },
+  {
+    id: "c41", obj: "5.1", type: "mc",
+    q: "This code is supposed to print the average of three test scores. What type of error does it contain, and what does it print?",
+    code: String.raw`int a = 80, b = 90, c = 100;
+double avg = a + b + c / 3;
+System.out.println(avg);`,
+    options: [
+      "A logic error; it prints `203.0`",
+      "A syntax error; it does not compile",
+      "A runtime error; it throws an `ArithmeticException`",
+      "No error; it prints `90.0`"
+    ],
+    answer: 0,
+    why: "`/` runs before `+`, and `100 / 3` is int division = 33, so 80 + 90 + 33 = 203, which is stored as 203.0. It compiles and runs but gives the wrong answer: that's a LOGIC error. Fix: `(a + b + c) / 3.0`."
+  },
+  {
+    id: "c42", obj: "5.1", type: "type",
+    q: "What is the output?",
+    code: String.raw`double x = 5.0 / 0;
+double y = 0.0 / 0;
+System.out.println(x + " " + y);`,
+    answer: "Infinity NaN",
+    why: "Only INTEGER division by zero throws ArithmeticException. Floating-point division by zero gives `Infinity` (or `-Infinity`), and 0.0 / 0 gives `NaN` (not a number)."
+  },
+  {
+    id: "c43", obj: "5.1", type: "mc",
+    q: "A program stops with the message below. Which statement is true?",
+    code: String.raw`Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index 5 out of bounds for length 5
+    at Roster.printLast(Roster.java:12)
+    at Roster.main(Roster.java:6)`,
+    options: [
+      "The exception was thrown on line 12 in `printLast`, which was called from line 6 in `main`",
+      "The exception was thrown on line 6 in `main`",
+      "The compiler reported a syntax error on line 12",
+      "The array has 6 elements, and index 5 is invalid"
+    ],
+    answer: 0,
+    why: "Read a stack trace from the TOP: the first `at` line is where it was thrown, and the lines below show who called it. It's a runtime exception, not a compile error. Length 5 means valid indexes are 0–4."
+  },
+  {
+    id: "c44", obj: "5.1", type: "mc",
+    q: "You run `javac Inventory.java` and receive `Inventory.java:8: error: ';' expected`. Which statement is true?",
+    options: [
+      "No `Inventory.class` file is created; you must fix line 8 and compile again",
+      "`Inventory.class` is created, but the program will crash when it reaches line 8",
+      "This is a runtime exception reported by the `java` command",
+      "The program runs and skips line 8"
+    ],
+    answer: 0,
+    why: "`javac` reports COMPILE (syntax) errors as File.java:line: error, and produces no .class file until they're fixed. The `java` command is what reports runtime exceptions."
+  },
+  {
+    id: "c45", obj: "5.1", type: "multi",
+    q: "Which two code segments compile but throw an exception at runtime? (Choose two.)",
+    options: [
+      "`int n = Integer.parseInt(\"4.5\");`",
+      "`int[] a = new int[3]; a[3] = 1;`",
+      "`int x = 7 / 2;`",
+      "`String s = 'hello';`",
+      "`double d = 7 / 0.0;`"
+    ],
+    answer: [0, 1],
+    why: "\"4.5\" isn't an int, so `parseInt` throws NumberFormatException. Index 3 in a length-3 array throws ArrayIndexOutOfBoundsException. `7 / 2` is just 3, `'hello'` is a compile error (single quotes are for one char), and `7 / 0.0` is Infinity."
+  },
+  {
+    id: "c46", obj: "5.1", type: "mc",
+    q: "What is the result?",
+    code: String.raw`int[] nums = {3, 6, 9};
+int sum = 0;
+for (int i = 1; i <= nums.length; i++) {
+    sum += nums[i];
+}
+System.out.println(sum);`,
+    options: [
+      "An `ArrayIndexOutOfBoundsException` is thrown",
+      "`15`",
+      "`18`",
+      "Compilation fails"
+    ],
+    answer: 0,
+    why: "Two off-by-one bugs. Starting at 1 skips index 0, and `<= nums.length` reaches index 3, which doesn't exist, so it throws before printing. The correct loop is `for (int i = 0; i < nums.length; i++)`."
+  },
+
+  // ---------- 5.2 Exception handling ----------
+  {
+    id: "c47", obj: "5.2", type: "type",
+    q: "What is the output?",
+    code: String.raw`try {
+    System.out.print("A");
+    int x = 10 / 0;
+    System.out.print("B");
+} catch (ArithmeticException e) {
+    System.out.print("C");
+} finally {
+    System.out.print("D");
+}
+System.out.println("E");`,
+    answer: "ACDE",
+    why: "The exception jumps straight to the catch, so the rest of the try (B) is skipped. `finally` always runs, and because the exception was handled, execution continues after the try statement (E)."
+  },
+  {
+    id: "c48", obj: "5.2", type: "type",
+    q: "What is the output?",
+    code: String.raw`try {
+    System.out.print("1");
+    int[] a = new int[2];
+    a[1] = 5;
+    System.out.print("2");
+} catch (ArrayIndexOutOfBoundsException e) {
+    System.out.print("3");
+} finally {
+    System.out.print("4");
+}
+System.out.println("5");`,
+    answer: "1245",
+    why: "`a[1]` is valid for a length-2 array, so no exception is thrown and the catch is skipped. `finally` runs whether or not an exception occurred."
+  },
+  {
+    id: "c49", obj: "5.2", type: "type",
+    q: "What is the output?",
+    code: String.raw`static int test() {
+    try {
+        System.out.print("try ");
+        return 1;
+    } finally {
+        System.out.print("finally ");
+    }
+}
+
+// in main:
+System.out.println(test());`,
+    answer: "try finally 1",
+    why: "`finally` runs even when the try block returns. It runs before control goes back to the caller, so \"finally \" prints before main prints the returned 1."
+  },
+  {
+    id: "c50", obj: "5.2", type: "mc",
+    q: "What happens when this code runs?",
+    code: String.raw`try {
+    String s = null;
+    System.out.print("X");
+    s.length();
+    System.out.print("Y");
+} catch (ArithmeticException e) {
+    System.out.print("Z");
+} finally {
+    System.out.print("F");
+}
+System.out.print("END");`,
+    options: [
+      "It prints `XF`, then the program stops with a `NullPointerException`",
+      "It prints `XZFEND`",
+      "It prints `XFEND`",
+      "It prints `XYFEND`"
+    ],
+    answer: 0,
+    why: "The NullPointerException doesn't match `catch (ArithmeticException)`, so it isn't handled. `finally` still runs (F), then the exception crashes the program, so END never prints."
+  },
+  {
+    id: "c51", obj: "5.2", type: "mc",
+    q: "What is the result of compiling this code?",
+    code: String.raw`try {
+    int n = Integer.parseInt(input);
+} catch (Exception e) {
+    System.out.println("General");
+} catch (NumberFormatException e) {
+    System.out.println("Bad number");
+}`,
+    options: [
+      "Compilation fails because `NumberFormatException` has already been caught",
+      "It compiles and prints `General` for bad input",
+      "It compiles and prints `Bad number` for bad input",
+      "It compiles and prints both messages for bad input"
+    ],
+    answer: 0,
+    why: "Catch blocks must go from MOST specific to LEAST specific. `Exception` already catches NumberFormatException, so the second block is unreachable, which is a compile error. Swap the two blocks to fix it."
+  },
+  {
+    id: "c52", obj: "5.2", type: "type",
+    q: "What is the output?",
+    code: String.raw`String[] vals = {"10", "x", "0"};
+for (String v : vals) {
+    try {
+        int n = Integer.parseInt(v);
+        System.out.print(100 / n + " ");
+    } catch (NumberFormatException e) {
+        System.out.print("NF ");
+    } catch (ArithmeticException e) {
+        System.out.print("AR ");
+    }
+}`,
+    answer: "10 NF AR",
+    why: "\"10\" → 100 / 10 = 10. \"x\" → parseInt throws NumberFormatException. \"0\" parses fine, but 100 / 0 throws ArithmeticException. Each exception is handled, so the loop keeps going."
+  },
+  {
+    id: "c53", obj: "5.2", type: "yn",
+    q: "For each statement, select Yes if it is true, or No if it is false.",
+    statements: [
+      "`NullPointerException` is a checked exception that must be caught or declared.",
+      "`IOException` is a checked exception.",
+      "`ArithmeticException` is a subclass of `RuntimeException`."
+    ],
+    answer: [false, true, true],
+    why: "CHECKED exceptions (IOException, FileNotFoundException) must be caught or declared with `throws`, or the code won't compile. UNCHECKED exceptions are RuntimeException and its subclasses (NullPointerException, ArithmeticException, ArrayIndexOutOfBoundsException, NumberFormatException, InputMismatchException)."
+  },
+  {
+    id: "c54", obj: "5.2", type: "mc",
+    q: "What is the result of compiling this code?",
+    code: String.raw`import java.io.*;
+
+public class Reader {
+    public static void main(String[] args) {
+        FileReader fr = new FileReader("data.txt");
+    }
+}`,
+    options: [
+      "Compilation fails: unreported exception `FileNotFoundException`; must be caught or declared to be thrown",
+      "It compiles; a `FileNotFoundException` occurs at runtime only if data.txt is missing",
+      "It compiles and runs with no errors",
+      "It compiles, but throws a `NullPointerException`"
+    ],
+    answer: 0,
+    why: "`FileNotFoundException` is CHECKED, so the compiler forces you to handle it even if the file exists. Either wrap the call in try/catch or add `throws` to main."
+  },
+  {
+    id: "c55", obj: "5.2", type: "multi",
+    q: "Refer to the `Reader` class in the previous question (`new FileReader(\"data.txt\")` in `main`). Which two changes allow the code to compile? (Choose two.)",
+    options: [
+      "Change the `main` declaration to `public static void main(String[] args) throws FileNotFoundException`",
+      "Put the statement in a `try` block followed by `catch (FileNotFoundException e)`",
+      "Put the statement in a `try` block followed by `catch (ArithmeticException e)`",
+      "Put the statement in a `try` block followed by only a `finally` block",
+      "Add `import java.util.*;`"
+    ],
+    answer: [0, 1],
+    why: "Checked exceptions must be caught (by a matching catch) or declared with `throws`. Catching an unrelated exception, or using try/finally with no catch, still leaves the exception unhandled."
+  },
+  {
+    id: "c56", obj: "5.2", type: "type",
+    q: "What is the output?",
+    code: String.raw`try {
+    throw new IllegalArgumentException("Age must be positive");
+} catch (IllegalArgumentException e) {
+    System.out.println(e.getMessage());
+    System.out.println(e);
+}`,
+    answer: "Age must be positive\njava.lang.IllegalArgumentException: Age must be positive",
+    why: "`getMessage()` returns ONLY the message text. Printing `e` calls `toString()`, which gives the full class name, a colon, and the message. `printStackTrace()` would also print the `at ...` lines."
+  },
+  {
+    id: "c57", obj: "5.2", type: "mc",
+    q: "Which class is the direct superclass of `ArithmeticException`?",
+    options: ["`RuntimeException`", "`Exception`", "`Throwable`", "`Error`"],
+    answer: 0,
+    why: "The hierarchy is Throwable → Exception → RuntimeException → ArithmeticException. `Error` is a separate branch under Throwable for serious JVM problems like OutOfMemoryError."
+  },
+  {
+    id: "c58", obj: "5.2", type: "mc",
+    q: "You need ONE catch block to handle both `NumberFormatException` and `ArithmeticException`. Which statement should you use?",
+    options: [
+      "`catch (NumberFormatException | ArithmeticException e)`",
+      "`catch (NumberFormatException || ArithmeticException e)`",
+      "`catch (NumberFormatException e, ArithmeticException e)`",
+      "`catch (NumberFormatException & ArithmeticException e)`"
+    ],
+    answer: 0,
+    why: "Multi-catch uses a SINGLE pipe `|` between the types and one variable name."
+  },
+  {
+    id: "c59", obj: "5.2", type: "mc",
+    q: "You are writing `setAge(int age)`. When `age` is negative, the method must stop and signal the caller with an `IllegalArgumentException`. Which statement should you use?",
+    options: [
+      "`throw new IllegalArgumentException(\"Age cannot be negative\");`",
+      "`throws new IllegalArgumentException(\"Age cannot be negative\");`",
+      "`throw IllegalArgumentException(\"Age cannot be negative\");`",
+      "`return new IllegalArgumentException(\"Age cannot be negative\");`"
+    ],
+    answer: 0,
+    why: "`throw` (a statement) + `new` exception object. `throws` (with an s) only goes in a method HEADER to declare exceptions. Without `new` it doesn't compile, and `return` just hands back an object without throwing anything."
+  },
+  {
+    id: "c60", obj: "5.2", type: "type",
+    q: "What is the output?",
+    code: String.raw`static int divide(int a, int b) {
+    System.out.print("in ");
+    int r = a / b;
+    System.out.print("out ");
+    return r;
+}
+
+// in main:
+try {
+    System.out.print(divide(8, 2) + " ");
+    System.out.print(divide(8, 0) + " ");
+} catch (ArithmeticException e) {
+    System.out.print("caught ");
+}
+System.out.println("done");`,
+    answer: "in out 4 in caught done",
+    why: "The first call prints \"in out \", then main prints \"4 \". The second call prints \"in \", then 8 / 0 throws. The exception travels up to main's catch, so \"out\" and the second result never print."
+  },
+  {
+    id: "c61", obj: "5.2", type: "mc",
+    q: "The user types `twenty` and presses Enter. What happens?",
+    code: String.raw`Scanner sc = new Scanner(System.in);
+int age = sc.nextInt();
+System.out.println(age);`,
+    options: [
+      "An `InputMismatchException` is thrown",
+      "A `NumberFormatException` is thrown",
+      "`0` is printed",
+      "Compilation fails"
+    ],
+    answer: 0,
+    why: "Scanner's `nextInt()` throws InputMismatchException (from java.util) for non-numeric input. `Integer.parseInt(\"twenty\")` would throw NumberFormatException instead, so know which one goes with which."
+  },
+
+  // ---------- Comments (1.2) ----------
+  {
+    id: "c62", obj: "1.2", type: "mc",
+    q: "Which comment style is read by the `javadoc` tool to generate HTML documentation?",
+    options: ["`/** ... */`", "`/* ... */`", "`// ...`", "`<!-- ... -->`"],
+    answer: 0,
+    why: "Javadoc comments start with `/**` (two stars). `/* */` is a regular block comment, `//` is a single-line comment, and `<!-- -->` is HTML, not Java."
+  },
+  {
+    id: "c63", obj: "1.2", type: "mc",
+    q: "You are documenting `public double getTotal(int qty)` with a Javadoc comment. Which tags describe the parameter and the value the method returns?",
+    options: [
+      "`@param qty` and `@return`",
+      "`@parameter qty` and `@return`",
+      "`@param qty` and `@output`",
+      "`@input qty` and `@result`"
+    ],
+    answer: 0,
+    why: "The standard Javadoc tags are `@param name description` and `@return description`. Others you may see: `@author`, `@version`, `@throws`."
+  },
+  {
+    id: "c64", obj: "1.2", type: "type",
+    q: "What is the output?",
+    code: String.raw`int x = 5; // x = 10;
+/* x = 20;
+x = 30; */
+x = x + 1; // add one
+System.out.println(x);`,
+    answer: "6",
+    why: "Everything after `//` on a line, and everything between `/*` and `*/`, is ignored by the compiler. Only `x = 5` and `x = x + 1` run."
+  },
+  {
+    id: "c65", obj: "1.2", type: "yn",
+    q: "For each statement about comments, select Yes if it is true, or No if it is false.",
+    statements: [
+      "A single-line comment begins with `//` and ends at the end of the line.",
+      "Comments are compiled into the .class file and slow the program down.",
+      "A comment that begins with `/*` can span multiple lines."
+    ],
+    answer: [true, false, true],
+    why: "The compiler throws comments away completely, so they have no effect on the .class file or on speed. `/* ... */` and `/** ... */` can span many lines, while `//` covers one line."
+  }
+]);
+
+</script>
+<script>
+(function(){
+"use strict";
+const OBJ = {
+  "1.1":"main() & command line","1.2":"Console I/O & comments","1.3":"Variable scope",
+  "2.1":"Primitive types","2.2":"Strings","2.3":"Arrays & ArrayList","2.4":"Parsing & casting","2.5":"Arithmetic & operators",
+  "3.1":"Branching (if / switch)","3.2":"Loops",
+  "4.1":"Classes & constructors","4.2":"Fields & access","4.3":"Methods","4.4":"Objects & references",
+  "5.1":"Errors & debugging","5.2":"Exception handling"
+};
+const DOMAINS = [["1","Java fundamentals"],["2","Data types & expressions"],["3","Flow control"],["4","Object-oriented programming"],["5","Compilation & debugging"]];
+const TYPE_LABEL = {mc:"Multiple choice", multi:"Choose multiple", type:"Type the output", yn:"Yes / No grid"};
+const QB = (window.QB || []).filter(q => OBJ[q.obj] && TYPE_LABEL[q.type]);
+
+const KEY = "itsjava.v1";
+let store = {};
+try { store = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { store = {}; }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
+function rec(id){ return store[id] || (store[id] = {s:0, c:0, last:null, flag:false}); }
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+const fmtP = s => fmt(s).replace(/\n/g, "<br>");
+function shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function dedent(code){
+  const lines = String(code).replace(/\t/g, "    ").replace(/^\s*\n/, "").replace(/\s+$/, "").split("\n");
+  const ind = Math.min(...lines.filter(l => l.trim()).map(l => l.match(/^ */)[0].length));
+  return lines.map(l => l.slice(isFinite(ind) ? ind : 0)).join("\n");
+}
+const KW = new Set("abstract boolean break byte case catch char class continue default do double else extends final finally float for if implements import instanceof int interface long new null package private protected public return short static super switch this throw throws true false try void while var".split(" "));
+function hl(code){
+  const re = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|("(?:\\.|[^"\\\n])*")|('(?:\\.|[^'\\\n])*')|\b(\d+(?:\.\d+)?[fFdDlL]?)\b|\b([A-Za-z_$][\w$]*)\b/g;
+  let out = "", last = 0, m;
+  while ((m = re.exec(code))) {
+    out += esc(code.slice(last, m.index));
+    const t = m[0];
+    if (m[1]) out += `<span class="t-c">${esc(t)}</span>`;
+    else if (m[2] || m[3]) out += `<span class="t-s">${esc(t)}</span>`;
+    else if (m[4]) out += `<span class="t-n">${t}</span>`;
+    else if (KW.has(t)) out += `<span class="t-k">${t}</span>`;
+    else if (/^[A-Z]/.test(t)) out += `<span class="t-t">${t}</span>`;
+    else out += t;
+    last = re.lastIndex;
+  }
+  return out + esc(code.slice(last));
+}
+function codeHTML(code){
+  const c = dedent(code), n = c.split("\n").length;
+  const gut = Array.from({length:n}, (_, i) => String(i + 1).padStart(2, "0")).join("\n");
+  return `<div class="code"><pre class="gut" aria-hidden="true">${gut}</pre><pre class="src">${hl(c)}</pre></div>`;
+}
+const optBody = t => /\n/.test(t) ? `<pre class="optcode">${hl(dedent(t))}</pre>` : `<span>${fmt(t)}</span>`;
+
+/* ---------- views ---------- */
+function showView(v){
+  $$(".tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.view === v)));
+  $("#v-practice").hidden = v !== "practice";
+  $("#v-cram").hidden = v !== "cram";
+}
+$$(".tab").forEach(t => t.addEventListener("click", () => { showView(t.dataset.view); window.scrollTo(0, 0); }));
+$$(".mini.hl").forEach(p => { p.innerHTML = hl(p.textContent); });
+$$(".jump a").forEach(a => a.addEventListener("click", e => { e.preventDefault(); const el = document.getElementById(a.getAttribute("href").slice(1)); if (el) window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - 64, behavior: "smooth"}); }));
+
+/* ---------- setup ---------- */
+function accFor(qs){
+  let s = 0, c = 0;
+  qs.forEach(q => { const r = store[q.id]; if (r) { s += r.s; c += r.c; } });
+  return s ? Math.round(c / s * 100) : null;
+}
+const missPool = () => QB.filter(q => store[q.id] && (store[q.id].last === 0 || store[q.id].flag));
+function renderSetup(){
+  const prev = new Set($$("#objs input").filter(i => i.checked).map(i => i.value));
+  const first = !$$("#objs input").length;
+  $("#objs").innerHTML = DOMAINS.map(([d, name]) => `<fieldset class="dom"><legend>${d} · ${esc(name)}</legend><div class="chips">` +
+    Object.keys(OBJ).filter(o => o[0] === d).map(o => {
+      const qs = QB.filter(q => q.obj === o), a = accFor(qs);
+      return `<label class="chip"><input type="checkbox" value="${o}" ${first || prev.has(o) ? "checked" : ""}><span class="cn">${o}</span><span class="ct">${esc(OBJ[o])}</span><span class="cs${a !== null && a < 70 ? " lo" : ""}">${qs.length}${a !== null ? " · " + a + "%" : ""}</span></label>`;
+    }).join("") + `</div></fieldset>`).join("");
+  const seen = QB.filter(q => store[q.id] && store[q.id].s > 0);
+  $("#st-total").textContent = QB.length;
+  $("#st-seen").textContent = seen.length;
+  const a = accFor(QB);
+  $("#st-acc").textContent = a === null ? "–" : a + "%";
+  const m = missPool().length;
+  $("#st-miss").textContent = m;
+  $("#redo").disabled = !m;
+  $("#redo").textContent = m ? `Redo misses & guesses (${m})` : "Redo misses";
+}
+$("#all-on").onclick = () => $$("#objs input").forEach(i => i.checked = true);
+$("#all-off").onclick = () => $$("#objs input").forEach(i => i.checked = false);
+function prio(q){ const r = store[q.id]; if (!r || !r.s) return 1; if (r.last === 0) return 0; if (r.flag) return 0.5; return 2 + r.c / r.s; }
+$("#go-drill").onclick = () => {
+  const objs = new Set($$("#objs input").filter(i => i.checked).map(i => i.value));
+  const incType = $("#inc-type").checked;
+  let pool = QB.filter(q => objs.has(q.obj) && (incType || q.type !== "type"));
+  if (!pool.length) { $("#setup-msg").textContent = "Pick at least one topic."; return; }
+  $("#setup-msg").textContent = "";
+  pool = shuffle(pool);
+  if ($("input[name=order]:checked").value === "weak") pool.sort((x, y) => prio(x) - prio(y));
+  const c = $("input[name=count]:checked").value;
+  if (c !== "all") pool = pool.slice(0, +c);
+  startSession(shuffle(pool.slice(0, Math.ceil(pool.length / 2))).concat(pool.slice(Math.ceil(pool.length / 2))), "drill");
+};
+$("#redo").onclick = () => { const p = missPool(); if (p.length) startSession(shuffle(p), "drill"); };
+$("#go-mock").onclick = () => {
+  const N = Math.min(40, QB.length), by = {};
+  QB.forEach(q => (by[q.obj] = by[q.obj] || []).push(q));
+  let pick = [];
+  Object.keys(by).forEach(o => pick.push(...shuffle(by[o]).slice(0, Math.max(1, Math.round(by[o].length * N / QB.length)))));
+  pick = shuffle(pick);
+  if (pick.length < N) pick.push(...shuffle(QB.filter(q => !pick.includes(q))).slice(0, N - pick.length));
+  startSession(pick.slice(0, N), "mock");
+};
+let resetArm = false;
+$("#reset").onclick = () => {
+  if (!resetArm) { resetArm = true; $("#reset").textContent = "Click again to erase all progress"; setTimeout(() => { resetArm = false; $("#reset").textContent = "Reset my progress"; }, 4000); return; }
+  store = {}; save(); resetArm = false; $("#reset").textContent = "Reset my progress"; renderSetup();
+};
+
+/* ---------- session ---------- */
+let S = null;
+const blank = q => q.type === "multi" ? [] : q.type === "yn" ? q.statements.map(() => null) : q.type === "type" ? "" : null;
+function startSession(qs, mode){
+  S = { mode, i:0, right:0, wrong:0, msg:"", finished:false, quitArm:false, finishArm:false,
+    items: qs.map(q => ({ q, perm: (q.type === "mc" || q.type === "multi") ? shuffle(q.options.map((_, k) => k)) : null, resp: blank(q), done:false, ok:null, guessed:false, flag:false, shown:false })),
+    deadline: mode === "mock" ? Date.now() + 50 * 60 * 1000 : null };
+  $("#setup").hidden = true; $("#session").hidden = false;
+  render(true);
+}
+function hasResp(it){ const r = it.resp, t = it.q.type; return t === "mc" ? r !== null : t === "multi" ? r.length > 0 : t === "yn" ? r.every(v => v !== null) : String(r).trim() !== ""; }
+const norm = s => String(s).replace(/\r/g, "").replace(/[“”]/g, '"').replace(/[‘’]/g, "'").split("\n").map(l => l.trim().replace(/\s+/g, " ")).join("\n").replace(/^\n+|\n+$/g, "");
+function grade(it){
+  const q = it.q, r = it.resp;
+  if (q.type === "mc") return r === q.answer;
+  if (q.type === "multi") { const a = q.answer.slice().sort(), b = r.slice().sort(); return a.length === b.length && a.every((v, i) => v === b[i]); }
+  if (q.type === "yn") return q.answer.every((v, i) => r[i] === v);
+  return [q.answer].concat(q.accept || []).some(a => norm(a) === norm(r));
+}
+function record(it){
+  const r = rec(it.q.id); r.s++; if (it.ok) { r.c++; r.flag = false; } r.last = it.ok ? 1 : 0;
+  if (it.guessed) r.flag = true;
+  save();
+}
+function answerHTML(it, rev){
+  const q = it.q, r = it.resp;
+  if (q.type === "mc" || q.type === "multi") {
+    const multi = q.type === "multi";
+    return (multi ? `<p class="hint">Select ${q.answer.length}.</p>` : "") + `<div class="opts" role="${multi ? "group" : "radiogroup"}">` + it.perm.map((k, d) => {
+      const sel = multi ? r.includes(k) : r === k, isAns = multi ? q.answer.includes(k) : q.answer === k;
+      let cls = "opt" + (multi ? " box" : "") + (sel ? " sel" : "");
+      if (rev) cls += isAns ? " right" : sel ? " wrong" : "";
+      const tag = rev && isAns ? `<span class="tag">Answer</span>` : rev && sel ? `<span class="tag">Your pick</span>` : "";
+      return `<button type="button" class="${cls}" data-act="opt" data-k="${k}" aria-pressed="${sel}" ${rev ? "disabled" : ""}><span class="key">${d + 1}</span>${optBody(q.options[k])}${tag}</button>`;
+    }).join("") + `</div>`;
+  }
+  if (q.type === "yn") {
+    return `<div class="yn"><div class="yn-h"><span>Statement</span><span>Yes</span><span>No</span></div>` + q.statements.map((s, k) => {
+      const v = r[k], a = q.answer[k];
+      const b = (val, label) => { let c = "ynb" + (v === val ? " sel" : ""); if (rev) c += a === val ? " right" : v === val ? " wrong" : ""; return `<button type="button" class="${c}" data-act="yn" data-k="${k}" data-v="${val ? 1 : 0}" aria-pressed="${v === val}" ${rev ? "disabled" : ""}>${label}</button>`; };
+      return `<div class="yn-r"><div class="yn-s">${fmt(s)}</div>${b(true, "Yes")}${b(false, "No")}</div>`;
+    }).join("") + `</div>`;
+  }
+  if (rev) return `<div class="typed-rev"><div><span class="lbl">You typed</span><pre class="out ${it.ok ? "ok" : "no"}">${esc(r || "(blank)")}</pre></div><div><span class="lbl">Actual output</span><pre class="out ok">${esc(q.answer)}</pre></div></div>`;
+  return `<label class="lbl" for="typed">Type exactly what prints. New line for each <code>println</code>. Ctrl+Enter checks.</label><textarea id="typed" rows="3" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="output"></textarea>`;
+}
+function gridHTML(){
+  return `<div class="grid" aria-label="Jump to question">` + S.items.map((it, k) =>
+    `<button type="button" data-act="goto" data-i="${k}" class="${k === S.i ? "cur" : ""}${hasResp(it) ? " ans" : ""}${it.flag ? " flag" : ""}" aria-label="Question ${k + 1}">${k + 1}</button>`).join("") + `</div>`;
+}
+function render(scroll){
+  const it = S.items[S.i], q = it.q, n = S.items.length, mock = S.mode === "mock", rev = !mock && it.done, last = S.i === n - 1;
+  const done = S.items.filter(x => x.done).length;
+  let acts;
+  if (mock) acts = `<button class="btn" data-act="prev" type="button" ${S.i === 0 ? "disabled" : ""}>Back</button><button class="btn${it.flag ? " on" : ""}" data-act="flag" type="button">${it.flag ? "Flagged" : "Flag for review"}</button><button class="btn primary" data-act="next" type="button">${last ? "Submit exam" : "Next"}</button>`;
+  else if (!it.done) acts = `<button class="btn primary" data-act="check" type="button">Check answer</button><button class="btn" data-act="reveal" type="button">Show answer</button>`;
+  else acts = `<button class="btn primary" data-act="next" type="button">${last ? "See results" : "Next question"}</button>${it.ok ? `<button class="btn${it.guessed ? " on" : ""}" data-act="guess" type="button">${it.guessed ? "Saved for review" : "I guessed: review later"}</button>` : ""}`;
+  $("#session").innerHTML = `
+    <div class="sbar"><button class="link" data-act="quit" type="button">${mock ? (S.quitArm ? "Click again to abandon exam" : "Quit exam") : "End session"}</button>
+      ${mock ? `<span class="timer" id="timer"></span>` : `<span class="tally"><b class="g">${S.right}</b> right · <b class="r">${S.wrong}</b> wrong</span>`}</div>
+    <div class="prog"><i style="width:${((mock ? S.items.filter(hasResp).length : done) / n * 100).toFixed(1)}%"></i></div>
+    ${mock ? gridHTML() : ""}
+    <article class="card" id="qcard">
+      <div class="qmeta"><span class="obj">${q.obj}</span><span>${esc(OBJ[q.obj])}</span><span class="tp">${TYPE_LABEL[q.type]}</span><span class="qn">${S.i + 1} / ${n}</span></div>
+      <div class="qtext">${fmtP(q.q)}</div>
+      ${q.code ? codeHTML(q.code) : ""}
+      ${answerHTML(it, rev)}
+      ${rev ? `<div class="fb ${it.ok ? "ok" : "no"}"><strong>${it.ok ? "Correct" : it.shown ? "Answer shown" : "Not quite"}</strong><p>${fmtP(q.why || "")}</p></div>` : ""}
+      <div class="actions">${acts}<span class="msg">${esc(S.msg)}</span><span class="keys">${q.type === "type" ? "" : "Keys: 1–" + (it.perm ? it.perm.length : 2) + " pick · "}Enter ${mock ? "next" : "check / next"}</span></div>
+    </article>`;
+  if (q.type === "type" && !rev) { const ta = $("#typed"); ta.value = it.resp; if (!scroll || window.matchMedia("(pointer:fine)").matches) ta.focus({preventScroll:true}); }
+  if (scroll) { const c = $("#session"); window.scrollTo({top: Math.max(0, c.getBoundingClientRect().top + window.scrollY - 60)}); }
+  tick();
+}
+function choose(k){
+  const it = S.items[S.i]; if (S.mode === "drill" && it.done) return;
+  if (it.q.type === "multi") { const i = it.resp.indexOf(k); if (i >= 0) it.resp.splice(i, 1); else it.resp.push(k); }
+  else it.resp = k;
+  S.msg = ""; S.finishArm = false; render();
+}
+function check(){
+  const it = S.items[S.i];
+  if (!hasResp(it)) { S.msg = it.q.type === "yn" ? "Answer every row first, or press Show answer." : "Answer first, or press Show answer."; render(); return; }
+  it.done = true; it.ok = grade(it); it.ok ? S.right++ : S.wrong++; record(it); S.msg = ""; render();
+}
+function reveal(){ const it = S.items[S.i]; it.done = true; it.ok = false; it.shown = true; S.wrong++; record(it); S.msg = ""; render(); }
+function go(i){ if (i < 0 || i >= S.items.length) return; S.i = i; S.msg = ""; S.quitArm = false; S.finishArm = false; render(true); }
+function next(){
+  const it = S.items[S.i], last = S.i === S.items.length - 1;
+  if (S.mode === "drill") { if (!it.done) return check(); return last ? results() : go(S.i + 1); }
+  if (!last) return go(S.i + 1);
+  const open = S.items.filter(x => !hasResp(x)).length;
+  if (open && !S.finishArm) { S.finishArm = true; S.msg = `${open} unanswered. Press Submit again to finish anyway.`; render(); return; }
+  finishMock();
+}
+function finishMock(){
+  if (S.finished) return; S.finished = true;
+  S.items.forEach(it => { it.done = true; it.ok = hasResp(it) && grade(it); it.ok ? S.right++ : S.wrong++; record(it); });
+  results();
+}
+function primary(){ if (S.mode === "drill" && !S.items[S.i].done) check(); else next(); }
+function tick(){
+  if (!S || S.mode !== "mock" || S.finished) return;
+  const ms = S.deadline - Date.now(), el = $("#timer");
+  if (ms <= 0) { finishMock(); return; }
+  if (el) { const m = Math.floor(ms / 60000), s = Math.floor(ms / 1000) % 60; el.textContent = `${m}:${String(s).padStart(2, "0")} left`; el.classList.toggle("low", ms < 5 * 60000); }
+}
+setInterval(tick, 1000);
+function quit(){
+  if (S.mode === "mock") { if (!S.quitArm) { S.quitArm = true; render(); return; } S.finished = true; return home(); }
+  if (S.items.some(it => it.done)) results(); else home();
+}
+function home(){ S = null; $("#session").hidden = true; $("#setup").hidden = false; renderSetup(); window.scrollTo(0, 0); }
+
+$("#session").addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b || !S) return;
+  const it = S.items[S.i];
+  switch (b.dataset.act) {
+    case "opt": choose(+b.dataset.k); break;
+    case "yn": if (!(S.mode === "drill" && it.done)) { it.resp[+b.dataset.k] = b.dataset.v === "1"; S.msg = ""; render(); } break;
+    case "check": check(); break;
+    case "reveal": reveal(); break;
+    case "next": next(); break;
+    case "prev": go(S.i - 1); break;
+    case "goto": go(+b.dataset.i); break;
+    case "flag": it.flag = !it.flag; render(); break;
+    case "guess": it.guessed = !it.guessed; rec(it.q.id).flag = it.guessed; save(); render(); break;
+    case "quit": quit(); break;
+    case "retry": { const p = S.review.map(x => x.q); startSession(shuffle(p), "drill"); break; }
+    case "home": home(); break;
+  }
+});
+$("#session").addEventListener("input", e => { if (e.target.id === "typed" && S) { S.items[S.i].resp = e.target.value; S.finishArm = false; } });
+document.addEventListener("keydown", e => {
+  if (!S || $("#session").hidden || S.view === "results" || e.altKey || e.metaKey && e.key !== "Enter") return;
+  if (e.target.tagName === "TEXTAREA") { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); primary(); } return; }
+  if (e.target.tagName === "INPUT") return;
+  const it = S.items[S.i];
+  if (e.key === "Enter") { e.preventDefault(); primary(); }
+  else if (/^[1-9]$/.test(e.key) && it.perm && +e.key <= it.perm.length) { e.preventDefault(); choose(it.perm[+e.key - 1]); }
+  else if (S.mode === "mock" && e.key === "ArrowRight") go(S.i + 1);
+  else if (S.mode === "mock" && e.key === "ArrowLeft") go(S.i - 1);
+});
+
+/* ---------- results ---------- */
+function ansHTML(q, r){
+  const none = "<em>No answer</em>";
+  if (q.type === "mc") return r === null || r === undefined ? none : optBody(q.options[r]);
+  if (q.type === "multi") return r && r.length ? r.map(k => `<div style="margin-bottom:4px">${optBody(q.options[k])}</div>`).join("") : none;
+  if (q.type === "yn") return q.statements.map((s, k) => `<div class="ynline"><b>${r[k] === null || r[k] === undefined ? "–" : r[k] ? "Yes" : "No"}</b> · ${fmt(s)}</div>`).join("");
+  return `<pre class="out">${esc(r || "(blank)")}</pre>`;
+}
+function results(){
+  const mock = S.mode === "mock", done = S.items.filter(it => it.done);
+  const right = done.filter(it => it.ok).length, pct = done.length ? Math.round(right / done.length * 100) : 0;
+  S.view = "results";
+  S.review = done.filter(it => !it.ok || it.guessed);
+  const objs = Object.keys(OBJ).filter(o => done.some(it => it.q.obj === o));
+  const bars = objs.map(o => {
+    const xs = done.filter(it => it.q.obj === o), c = xs.filter(it => it.ok).length, p = c / xs.length;
+    return `<div class="bar"><span class="nm"><span class="obj">${o}</span> ${esc(OBJ[o])}</span><span class="track"><span class="fill" style="display:block;width:${Math.max(4, p * 100)}%;background:var(${p >= .8 ? "--good" : p >= .6 ? "--hot" : "--bad"})"></span></span><span class="n">${c}/${xs.length}</span></div>`;
+  }).join("");
+  const rv = S.review.map(it => { const q = it.q;
+    return `<details class="rv"><summary><span class="obj">${q.obj}</span><span class="s">${fmt(q.q.split("\n")[0])}</span><span class="tag ${it.ok ? "gs" : "bad"}">${it.ok ? "Guessed" : "Missed"}</span></summary>
+      <div class="rv-b"><div class="qtext">${fmtP(q.q)}</div>${q.code ? codeHTML(q.code) : ""}
+      <div class="cols"><div><span class="lbl">Your answer</span>${ansHTML(q, it.resp)}</div><div><span class="lbl">Correct answer</span>${ansHTML(q, q.answer)}</div></div>
+      <p class="why">${fmtP(q.why || "")}</p></div></details>`; }).join("");
+  $("#session").innerHTML = `<article class="card">
+    <div class="eyebrow">${mock ? "Mock exam result" : "Drill result"}</div>
+    <div class="score"><b>${pct}%</b><span>${right} of ${done.length} correct</span>
+      ${mock ? `<span class="${pct >= 80 ? "pass" : "fail"}">${pct >= 80 ? "Ready. Comfortable margin over 700/1000." : pct >= 70 ? "Borderline. Drill the red topics below." : "Not there yet. Drill the red topics below."}</span>` : ""}</div>
+    <div class="bars">${bars}</div>
+    <div class="row">${S.review.length ? `<button class="btn primary" data-act="retry" type="button">Drill these ${S.review.length} again</button>` : ""}<button class="btn" data-act="home" type="button">Back to start</button></div>
+  </article>
+  ${S.review.length ? `<h2 style="font-size:22px;margin:26px 0 10px">Review: missed and guessed</h2>${rv}` : `<p style="margin-top:20px">Nothing missed. Try a different topic mix or the mock exam.</p>`}`;
+  window.scrollTo(0, 0);
+}
+
+renderSetup();
+if (location.hash === "#cram") showView("cram");
+})();
+</script>
